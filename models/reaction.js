@@ -11,12 +11,31 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Reaction.belongsTo(models.Thread, {foreignKey: "ThreadId"})
+      Reaction.belongsTo(models.User, {foreignKey: "UserId"})
     }
   }
   Reaction.init({
-    ThreadId: DataTypes.INTEGER,
-    UserId: DataTypes.INTEGER,
-    reaction: DataTypes.BOOLEAN
+    ThreadId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: true,
+        notEmpty: true
+      }
+    },
+    UserId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: true,
+        notEmpty: true    
+    }
+  },
+    reaction: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: null
+    }
   }, {
     sequelize,
     modelName: 'Reaction',

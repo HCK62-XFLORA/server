@@ -11,13 +11,45 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Thread.belongsTo(models.User, {foreignKey: "UserId"})
+      Thread.hasMany(models.Comment, {foreignKey: "ThreadId"})
+      Thread.hasMany(models.Reaction, {foreignKey: "ThreadId"})
+      Thread.belongsTo(models.Forum, {foreignKey: "ForumId"})
     }
   }
   Thread.init({
-    UserId: DataTypes.INTEGER,
-    imgUrl: DataTypes.STRING,
-    content: DataTypes.TEXT,
-    ForumId: DataTypes.INTEGER
+    UserId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: true,
+        notEmpty: true
+      }
+    },
+    imgUrl: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {msg: "Image cannot be empty"},
+        notEmpty: {msg: "Image cannot be empty"}
+      }
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      validate: {
+        notNull: {msg: "Content cannot be empty"},
+        notEmpty: {msg: "Content cannot be empty"}
+      }
+    },
+    ForumId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: true,
+        notEmpty: true
+      }
+    }
   }, {
     sequelize,
     modelName: 'Thread',

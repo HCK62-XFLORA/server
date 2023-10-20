@@ -11,12 +11,35 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      MyPlant.belongsTo(models.User, {foreignKey: "UserId"})
+      // MyPlant.belongsTo(models.Plant, {foreignKey: "PlantId"}) //INI HARUS DIBUAT WOIIII JANGAN LUPAAA
     }
   }
   MyPlant.init({
-    PlantId: DataTypes.INTEGER,
-    UserId: DataTypes.INTEGER,
-    imgUrl: DataTypes.STRING
+    PlantId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: true,
+        notEmpty: true
+      }
+    },
+    UserId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: true,
+        notEmpty: true
+      }
+    },
+    imgUrl: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {msg: "Image cannot be empty"},
+        notEmpty: {msg: "Image cannot be empty"}
+      }
+    }
   }, {
     sequelize,
     modelName: 'MyPlant',

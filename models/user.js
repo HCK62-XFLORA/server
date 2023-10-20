@@ -11,17 +11,68 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      User.hasMany(models.Thread, {foreignKey: "UserId"})
+      User.hasMany(models.Comment, {foreignKey: "UserId"})
+      User.hasMany(models.MyPlant, {foreignKey: "UserId"})
+      User.hasMany(models.Reaction, {foreignKey: "UserId"})
     }
   }
   User.init({
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
-    username: DataTypes.STRING,
-    birthday: DataTypes.DATE,
-    gender: DataTypes.STRING,
-    badge: DataTypes.STRING,
+    email: {
+      type: DataTypes.STRING,
+      unique: {msg: "Account already exists"},
+      allowNull: false,
+      validate: {
+        notNull: {msg: "Email cannot be empty"},
+        notEmpty: {msg: "Email cannot be empty"}
+      }
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {msg: "password cannot be empty"},
+        notEmpty: {msg: "password cannot be empty"},
+        len: {
+          args: 8,
+          msg: "Password must be at least 8 characters"
+        }
+      }
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {msg: "Username cannot be empty"},
+        notEmpty: {msg: "Username cannot be empty"}
+      }
+    },
+    birthday: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      validate: {
+        notNull: {msg: "Birthday cannot be empty"},
+        notEmpty: {msg: "Birthday cannot be empty"}
+      }
+    },
+    gender: {
+      type: DataTypes.ENUM(["Male", "Female"]),
+      allowNull: false,
+      validate: {
+        notNull: {msg: "Gender cannot be empty"},
+        notEmpty: {msg: "Gender cannot be empty"}
+      }
+    },
+    badge: {
+      type: DataTypes.ENUM(["Beginner", "Intermediate", "Expert"]),
+    },
     point: DataTypes.INTEGER
   }, {
+    hooks: {
+      beforeCreate: (user) => {
+        user.badge = "Beginner"
+      }
+    },
     sequelize,
     modelName: 'User',
   });
