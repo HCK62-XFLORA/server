@@ -6,21 +6,19 @@ List of available endpoint:
 
 - `POST /register`
 - `POST /login`
+- `GET /threads/:threadId`
 
 Routes below need authentication:
-
-- `GET /users`
+- `GET /users/:UserId`
 - `POST /plants`
 - `GET /plants/:plantId`
 - `POST /notifications`
 - `GET /notifications/:notificationId`
 - `POST /threads`
-- `GET /threads/:threadId`
 - `POST /threads/:threadId/comments`
 - `GET /threads/:threadId/comments/:commentId`
 
 Routes below need authentication & authorization:
-- `GET /users/:UserId`
 - `PUT /users/:UserId`
 - `POST /users/:UserId/plants`
 - `GET /users/:userId/plants`
@@ -513,7 +511,7 @@ _Response (400 - Bad Request)_
 }
 ```
 
-## 11. GET /notifications/:notificationId
+## 11. GET /notifications/:notificationId ------ gaada schemanya
 Description:
 - Retrieves information about a specific notification based on the provided notification ID.
 - headers:
@@ -616,7 +614,7 @@ _Response (200 - OK)_
 _Response (400 - Bad Request)_
 ```JSON
 {
-  "message": "Notification not found."
+  "message": "Notification not found." -------- ini tidak ada
 }
 ```
 
@@ -643,7 +641,7 @@ _Response (201 - OK)_
 }
 ```
 
-## 15. GET /threads/:threadId/comments/:commentId
+## 15. GET /threads/:threadId/comments/:commentId ------tidak usah
 
 Description:
 - Retrieves information about a specific thread based on the provided thread ID.
