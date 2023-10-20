@@ -1,10 +1,6 @@
 {
   "development": {
-    "username": "postgres",
-    "password": "null",
-    "database": "database",
-    "host": "127.0.0.1",
-    "dialect": "postges"
+    "use_env_variable": "DATABASE_DEVELOPMENT"
   },
   "test": {
     "username": "root",

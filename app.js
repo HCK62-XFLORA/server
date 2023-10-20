@@ -10,6 +10,7 @@ const router = require(`./routes/index`)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors())
+app.use(`/`, router)
 
 app.get(`/`, (req, res) => res.send(`Hi there!`))
 
