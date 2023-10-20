@@ -6,98 +6,81 @@ List of available endpoint:
 
 - `POST /register`
 - `POST /login`
+- `GET /users/:UserId`
 
 Routes below need authentication:
 
-- `GET /users`
 - `POST /plants`
 - `GET /plants/:plantId`
-- `POST /notifications`
 - `GET /notifications/:notificationId`
 - `POST /threads`
+- `GET /threads`
 - `GET /threads/:threadId`
-- `POST /threads/:threadId/comments`
-- `GET /threads/:threadId/comments/:commentId`
+- `POST /comments/:threadId `
 
 Routes below need authentication & authorization:
-- `GET /users/:UserId`
 - `PUT /users/:UserId`
 - `POST /users/:UserId/plants`
 - `GET /users/:userId/plants`
 - `DELETE /users/:userId/plants/:plantId`
 &nbsp;
-
+ // butuh query di thread
 ## Models :
 
-_User_
+_Users_
 ```
 - username : string, required
 - email : string, required, unique
 - password : string, required
 - birthday: string, required
 - gender : string, required
+- badge : enum, required
+- points : integer
 ```
 
-_MyPlant_
+_MyPlants_
 ```
 - PlantId: integer, required
 - UserId : integer, required
+- imgUrl : string, required
 ```
 
-_Plant_
+_Plants_
 ```
-name: string, required
-family : string, required
-```
-
-_Notification_
-```
-UserId : integer, required
-commentId : integer, required
-whatHappend: string, required
+- name: string, required
+- family : string, required
+- imgUrl : string, required
+- description:  string, required 
 ```
 
-_Thread_
+_Threads_
 ```
 - UserId: integer, required
-- likes : integer, required
-- dislike : integer, required
+- imgUrls : integer, required
 - content : text, required
-- imageUrl : string, required
+- forumId : integer, required
+
 ```
 
-_Comment_
+_Comments_
 ```
 - ThreadId: integer, required
 - comment: string, required
+- isUseFul : boolean, required
 ```
-## Relation :
-1. User :
 
-One-to-Many relationship with MyPlant 
-One-to-Many relationship with Notification 
-One-to-Many relationship with Thread 
+_Forums_
+```
+name: string, required
+imgUrl: string, required
+```
 
-2. MyPlant:
-
-Many-to-One relationship with User 
-
-3. Plant:
-
-No direct relationships defined in the provided models.
-
-4. Notification:
-
-Many-to-One relationship with User 
-
-5. Thread:
-
-Many-to-One relationship with User 
-One-to-Many relationship with Comment 
-
-6. Comment:
-
-Many-to-One relationship with Thread 
+_Reactions_
+```
+ThreadId : integer, required
+UserId : integer, required
+reaction : boolean, required
+```
 
 
 ## 1. POST /register
@@ -332,7 +315,7 @@ _Response (400 - Bad Request)_
 
 ## 6. GET /users/:userId/plants
 Description:
-- Adds a new plant to the user's plant list.
+- Get a new  plant list.
 
 - headers:
 
@@ -354,12 +337,21 @@ _Response (200 - OK)_
 
 ```json
 {
-  "userPlants": [
+  "MyPlants": [
     {
-      "userPlantId": "integer",
-      "PlantId": "integer",
-      "plantName": "string",
-      "family": "string"
+      "MyPlantId": "integer",
+      "MyPlant": {
+        "Plants": {
+            "name": "string",
+            "family" : "string",
+            "imgUrl" : "string",
+            "description":  "string" 
+        },
+        ...
+        "UserId" : "integer",
+        "imgUrl" : "string"
+      },
+      ...
     },
     ...
   ]
@@ -426,7 +418,9 @@ Description:
 ```json
 {
   "name": "string",
-  "family": "string"
+  "family": "string",
+  "imgUrl" : "string",
+  "description" : "string"
 }
 ```
 
@@ -444,6 +438,7 @@ _Response (400 - Bad Request)_
 ```
 
 ## 9. GET /plants/:plantId
+
 Description:
 - Retrieves information about a specific plant based on the provided plant ID.
 
@@ -467,7 +462,8 @@ _Response (200 - OK)_
   "plantId": "integer",
   "name": "string",
   "family": "string",
-  "createdAt": "string"
+  "imgUrl": "string",
+  "description": "string"
 }
 ```
 
@@ -478,113 +474,43 @@ _Response (400 - Bad Request)_
 }
 ```
 
-## 10. POST /notifications
+## 10. GET /threads 
 Description:
-- Creates a new notification for a user.
+- Get a thread in the system.
 
-- headers:
-
-```json
-{
-  "access_token": "string"
-}
-```
-
-- body:
-
-```json
-{
-  "UserId": "integer",
-  "commentId": "integer",
-  "whatHappened": "string"
-}
-```
-
-_Response (201 - OK)_
-```JSON
-{
-  "message": "Notification successfully created."
-}
-```
-_Response (400 - Bad Request)_
-```JSON
-{
-  "message": "Invalid input. Please provide valid data."
-}
-```
-
-## 11. GET /notifications/:notificationId
-Description:
-- Retrieves information about a specific notification based on the provided notification ID.
-- headers:
-```json
-{
-  "access_token": "string"
-}
-```
-- params:
-
-```json
-{
-  "notificationId": "integer (required)"
-}
-```
+Request:
+- Query:
+  ```JSON
+  {
+    "nthThreads" : "integer (required)",
+    "catgeoryForum" : "string (required)"
+  }
+  ```
 
 _Response (200 - OK)_
 ```JSON
-{
-  "notificationId": "integer",
-  "UserId": "integer",
-  "commentId": "integer",
-  "whatHappened": "string",
-  "createdAt": "string"
-}
-```
-_Response (400 - Bad Request)_
-```JSON
-{
-  "message": "Notification not found."
-}
-```
-
-## 12. POST /threads
-Description:
-- Creates a new thread in the system.
-
-- headers:
-```json
-{
-  "access_token": "string"
-}
-```
-
-- body:
-
-```json
-{
-  "UserId": "integer",
-  "likes": "integer",
-  "dislikes": "integer",
-  "content": "text",
-  "imageUrl": "string"
-}
-```
-
-_Response (201 - OK)_
-```JSON
-{
-  "message": "Thread successfully created."
-}
+[
+  {
+    "UserId": "integer", 
+    "imgUrls" : "integer", 
+    "content" : "text", 
+    "forum" : {
+      "name": "string",
+      "imgUrl": "string"
+    }
+  },
+  ...
+]
 ```
 
 _Response (400 - Bad Request)_
 ```JSON
 {
-  "message": "Invalid input. Please provide valid data."
+  "message": "Thread not found."
 }
 ```
 
-## 13. GET /threads/:threadId
+## 11. GET /threads/:threadId
 Description:
 - Retrieves information about a specific thread based on the provided thread ID.
 
@@ -605,22 +531,28 @@ Description:
 _Response (200 - OK)_
 ```JSON
 {
-  "notificationId": "integer",
-  "UserId": "integer",
-  "commentId": "integer",
-  "whatHappened": "string",
-  "createdAt": "string"
+  "User": {
+    "username" : "string"
+  },
+  "imgUrls": "string",
+  "content": "string",
+  "forum": {
+    "name": "string",
+    "imgUrl": "string"
+  }
 }
 ```
 
 _Response (400 - Bad Request)_
 ```JSON
 {
-  "message": "Notification not found."
+  "message": "Thread not found."
 }
 ```
 
-## 14. POST /threads/:threadId/comments
+## 12. POST /threads
+Description:
+- Creates a new thread in the system.
 
 - headers:
 ```json
@@ -632,6 +564,40 @@ _Response (400 - Bad Request)_
 - body:
 
 ```json
+  {
+    "UserId": "integer", 
+    "imgUrls" : "integer", 
+    "content" : "text", 
+    "forumId" : "integer"
+  }
+```
+
+_Response (201 - OK)_
+```JSON
+{
+  "message": "Thread successfully created."
+}
+```
+
+_Response (400 - Bad Request)_
+```JSON
+{
+  "message": "Invalid input. Please provide valid data."
+}
+```
+
+
+## 13. POST /comments/:threadId
+
+- headers:
+```json
+{
+  "access_token": "string"
+}
+```
+- body:
+
+```json
 {
   "comment": "string"
 }
@@ -640,43 +606,6 @@ _Response (201 - OK)_
 ```JSON
 {
   "message": "Comment successfully created."
-}
-```
-
-## 15. GET /threads/:threadId/comments/:commentId
-
-Description:
-- Retrieves information about a specific thread based on the provided thread ID.
-
-- headers:
-```json
-{
-  "access_token": "string"
-}
-```
-- params:
-
-```json
-{
-  "threadId": "integer (required)",
-  "commentId": "integer (required)"
-}
-```
-
-_Response (200 - OK)_
-```JSON
-{
-  "commentId": "integer",
-  "ThreadId": "integer",
-  "comment": "string",
-  "createdAt": "string"
-}
-```
-
-_Response (400 - Bad Request)_
-```JSON
-{
-  "message": "Notification not found."
 }
 ```
 
