@@ -11,11 +11,26 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Forum.hasMany(models.Thread, {foreignKey: "ForumId"})
     }
   }
   Forum.init({
-    name: DataTypes.STRING,
-    imgUrl: DataTypes.STRING
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {msg: "Forum name cannot be empty"},
+        notEmpty: {msg: "Forum name cannot be empty"}
+      }
+    },
+    imgUrl: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {msg: "Image cannot be empty"},
+        notEmpty: {msg: "Image cannot be empty"}
+      }
+    }
   }, {
     sequelize,
     modelName: 'Forum',
