@@ -24,13 +24,17 @@ async function authorization(req, res, next){
     try {
         const {id, username} = req.user
 
-        const thread = Thread.findByPk(req.params.id)
+        const thread = await Thread.findByPk(req.params.id)
 
         if(!thread){
             throw {name: "NotFound"}
         }
+
+
+
+        next()
     } catch (error) {
-        
+        next(Error)
     }
 }
 
