@@ -17,7 +17,11 @@ module.exports = {
         key: `id`
       },
       ThreadId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: `Threads`
+        },
+        key: `id`
       },
       comment: {
         type: Sequelize.STRING
