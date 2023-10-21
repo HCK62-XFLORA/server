@@ -454,7 +454,35 @@ _Response (200 - OK)_
 
 
 ## 9. GET /forums/:forumId 
+Description:
 
+- Get a forum list by id.
+
+- headers:
+
+```json
+{
+  "access_token": "string"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+    "id": "integer",
+    "name": "integer",
+    "imgUrl": "integer"
+}
+```
+
+_Response (400 - Bad Request)_
+
+```JSON
+{
+    "message": "Not Found"
+}
+```
 
 ## 9. POST /plants
 
