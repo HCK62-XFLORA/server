@@ -25,7 +25,7 @@ module.exports = {
       ForumId: {
         type: Sequelize.INTEGER,
         references: {
-          model: `Threads`
+          model: `Forums`
         },
         key: `id`
       },
