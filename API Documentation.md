@@ -10,24 +10,27 @@ List of available endpoint:
 
 Routes below need authentication:
 
+- `GET /forums`
+- `GET /forums/:forumId`
 - `POST /plants`
 - `GET /plants/:plantId`
-- `GET /notifications/:notificationId`
 - `POST /threads`
 - `GET /threads`
 - `GET /threads/:threadId`
 - `POST /comments/:threadId `
 
 Routes below need authentication & authorization:
+
 - `PUT /users/:UserId`
 - `POST /users/:UserId/plants`
 - `GET /users/:userId/plants`
 - `DELETE /users/:userId/plants/:plantId`
-&nbsp;
- // butuh query di thread
+  &nbsp;
+
 ## Models :
 
 _Users_
+
 ```
 - username : string, required
 - email : string, required, unique
@@ -39,6 +42,7 @@ _Users_
 ```
 
 _MyPlants_
+
 ```
 - PlantId: integer, required
 - UserId : integer, required
@@ -46,14 +50,16 @@ _MyPlants_
 ```
 
 _Plants_
+
 ```
 - name: string, required
 - family : string, required
 - imgUrl : string, required
-- description:  string, required 
+- description:  string, required
 ```
 
 _Threads_
+
 ```
 - UserId: integer, required
 - imgUrls : integer, required
@@ -63,6 +69,7 @@ _Threads_
 ```
 
 _Comments_
+
 ```
 - ThreadId: integer, required
 - comment: string, required
@@ -70,18 +77,19 @@ _Comments_
 ```
 
 _Forums_
+
 ```
 name: string, required
 imgUrl: string, required
 ```
 
 _Reactions_
+
 ```
 ThreadId : integer, required
 UserId : integer, required
 reaction : boolean, required
 ```
-
 
 ## 1. POST /register
 
@@ -134,6 +142,7 @@ OR
   "message": "Invalid date format. Please provide a valid date."
 }
 ```
+
 &nbsp;
 
 ## 2. POST /login
@@ -156,7 +165,6 @@ _Response (201 - OK)_
   "message": "Login successful.",
   "access_token": "string"
 }
-
 ```
 
 _Response (400 - Bad Request)_
@@ -176,6 +184,7 @@ OR
 ## 3. GET /users/:UserId
 
 Description:
+
 - Retrieves user information based on the provided user ID.
 
 - headers:
@@ -215,12 +224,13 @@ _Response (404 - Not Found)_
 }
 
 ```
-&nbsp;
 
+&nbsp;
 
 ## 4. PUT /users/:UserId
 
 Description:
+
 - Edit User Data
 
 - headers:
@@ -240,6 +250,7 @@ Description:
 ```
 
 -Body:
+
 ```JSON
 {
   "username": "string",
@@ -250,6 +261,7 @@ Description:
 ```
 
 _Response (200 - OK)_
+
 ```JSON
 {
   "message": "User with id ${id} updated successfully"
@@ -257,6 +269,7 @@ _Response (200 - OK)_
 ```
 
 _Response (404 - Not Found)_
+
 ```JSON
 {
   "message": "Invalid input. Please provide valid data."
@@ -281,7 +294,9 @@ OR
 ```
 
 ## 5. POST /users/:UserId/plants
+
 Description:
+
 - Adds a new plant to the user's plant list.
 
 - headers:
@@ -299,7 +314,9 @@ Description:
   "UserId": "integer (required)"
 }
 ```
+
 _Response (201 - OK)_
+
 ```JSON
 {
   "message": "Plant successfully added to the user's list."
@@ -307,6 +324,7 @@ _Response (201 - OK)_
 ```
 
 _Response (400 - Bad Request)_
+
 ```JSON
 {
   "message": "Invalid input. Please provide a valid PlantId."
@@ -314,8 +332,10 @@ _Response (400 - Bad Request)_
 ```
 
 ## 6. GET /users/:userId/plants
+
 Description:
-- Get a new  plant list.
+
+- Get a new plant list.
 
 - headers:
 
@@ -345,7 +365,7 @@ _Response (200 - OK)_
             "name": "string",
             "family" : "string",
             "imgUrl" : "string",
-            "description":  "string" 
+            "description":  "string"
         },
         ...
         "UserId" : "integer",
@@ -358,8 +378,8 @@ _Response (200 - OK)_
 }
 ```
 
-
 _Response (400 - Bad Request)_
+
 ```JSON
 {
   "message": "User's plant list not found."
@@ -367,7 +387,9 @@ _Response (400 - Bad Request)_
 ```
 
 ## 7. DELETE /users/:userId/plants/:plantId
+
 Description:
+
 - Removes a plant from the user's plant list based on the provided plant ID.
 
 - headers:
@@ -388,21 +410,56 @@ Description:
 ```
 
 _Response (200 - OK)_
+
 ```JSON
 {
   "message": "Plant successfully removed from the user's list."
 }
 ```
+
 _Response (400 - Bad Request)_
+
 ```JSON
 {
   "message": "Plant not found in the user's list."
 }
 ```
 
-## 8. POST /plants
+## 8. GET /forums
 
 Description:
+
+- Get a new forum list.
+
+- headers:
+
+```json
+{
+  "access_token": "string"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+  [
+      {
+          "id": "integer",
+          "name": "integer",
+          "imgUrl": "integer"
+      },
+    ...
+  ]
+```
+
+
+## 9. GET /forums/:forumId 
+
+
+## 9. POST /plants
+
+Description:
+
 - Adds a new plant to the system.
 
 - headers:
@@ -419,27 +476,31 @@ Description:
 {
   "name": "string",
   "family": "string",
-  "imgUrl" : "string",
-  "description" : "string"
+  "imgUrl": "string",
+  "description": "string"
 }
 ```
 
 _Response (201 - OK)_
+
 ```JSON
 {
   "message": "Plant successfully added."
 }
 ```
+
 _Response (400 - Bad Request)_
+
 ```JSON
 {
   "message": "Invalid input. Please provide valid data."
 }
 ```
 
-## 9. GET /plants/:plantId
+## 10. GET /plants/:plantId
 
 Description:
+
 - Retrieves information about a specific plant based on the provided plant ID.
 
 - headers:
@@ -449,6 +510,7 @@ Description:
   "access_token": "string"
 }
 ```
+
 - params:
 
 ```json
@@ -456,7 +518,9 @@ Description:
   "plantId": "integer (required)"
 }
 ```
+
 _Response (200 - OK)_
+
 ```JSON
 {
   "plantId": "integer",
@@ -468,17 +532,21 @@ _Response (200 - OK)_
 ```
 
 _Response (400 - Bad Request)_
+
 ```JSON
 {
   "message": "Plant not found."
 }
 ```
 
-## 10. GET /threads 
+## 11. GET /threads
+
 Description:
+
 - Get a thread in the system.
 
 Request:
+
 - Query:
   ```JSON
   {
@@ -488,12 +556,13 @@ Request:
   ```
 
 _Response (200 - OK)_
+
 ```JSON
 [
   {
-    "UserId": "integer", 
-    "imgUrls" : "integer", 
-    "content" : "text", 
+    "UserId": "integer",
+    "imgUrls" : "integer",
+    "content" : "text",
     "forum" : {
       "name": "string",
       "imgUrl": "string"
@@ -504,22 +573,27 @@ _Response (200 - OK)_
 ```
 
 _Response (400 - Bad Request)_
+
 ```JSON
 {
   "message": "Thread not found."
 }
 ```
 
-## 11. GET /threads/:threadId
+## 12. GET /threads/:threadId
+
 Description:
+
 - Retrieves information about a specific thread based on the provided thread ID.
 
 - headers:
+
 ```json
 {
   "access_token": "string"
 }
 ```
+
 - params:
 
 ```json
@@ -529,6 +603,7 @@ Description:
 ```
 
 _Response (200 - OK)_
+
 ```JSON
 {
   "User": {
@@ -544,17 +619,21 @@ _Response (200 - OK)_
 ```
 
 _Response (400 - Bad Request)_
+
 ```JSON
 {
   "message": "Thread not found."
 }
 ```
 
-## 12. POST /threads
+## 13. POST /threads
+
 Description:
+
 - Creates a new thread in the system.
 
 - headers:
+
 ```json
 {
   "access_token": "string"
@@ -564,15 +643,16 @@ Description:
 - body:
 
 ```json
-  {
-    "UserId": "integer", 
-    "imgUrls" : "integer", 
-    "content" : "text", 
-    "forumId" : "integer"
-  }
+{
+  "UserId": "integer",
+  "imgUrls": "integer",
+  "content": "text",
+  "forumId": "integer"
+}
 ```
 
 _Response (201 - OK)_
+
 ```JSON
 {
   "message": "Thread successfully created."
@@ -580,21 +660,23 @@ _Response (201 - OK)_
 ```
 
 _Response (400 - Bad Request)_
+
 ```JSON
 {
   "message": "Invalid input. Please provide valid data."
 }
 ```
 
-
-## 13. POST /comments/:threadId
+## 14. POST /comments/:threadId
 
 - headers:
+
 ```json
 {
   "access_token": "string"
 }
 ```
+
 - body:
 
 ```json
@@ -602,7 +684,9 @@ _Response (400 - Bad Request)_
   "comment": "string"
 }
 ```
+
 _Response (201 - OK)_
+
 ```JSON
 {
   "message": "Comment successfully created."
