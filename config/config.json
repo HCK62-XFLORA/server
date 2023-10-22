@@ -1,6 +1,11 @@
 {
   "development": {
-    "use_env_variable": "DATABASE_DEVELOPMENT"
+    "username": "postgres",
+    "password": "6tyBabfi52npculn",
+    "database": "postgres",
+    "host": "db.ixzanywhhfwcstbdhjih.supabase.co",
+    "dialect": "postgres",
+    "port": 5432
   },
   "test": {
     "username": "root",
@@ -10,10 +15,6 @@
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "use_env_variable": "DATABASE_PRODUCTION"
   }
 }
