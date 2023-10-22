@@ -9,9 +9,6 @@ const fs = require(`fs`)
 
 const bucket = `xflorabucket/threadImages`
 const s3 = new S3({
-    region: `ap-southeast-1`,
-    accessKeyId: `AKIAT3IJI5KSVBXXE7N2`,
-    secretAccessKey: `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`
 })
 
 const upload = multer({ 
