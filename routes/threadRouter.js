@@ -3,6 +3,11 @@ const threadRouter = express.Router()
 const ThreadController = require("../controllers/threadController")
 
 const { upload } = require("../middlewares/imgBodyParser")
+const { uploadLocal } = require("../helpers/tensorflow")
+
+threadRouter.post(`/predict`, ThreadController.checkDisease)
+
+threadRouter.get(`/points`, ThreadController.getPoints)
 
 threadRouter.get(`/`, ThreadController.getThreads)
 threadRouter.post(`/`, upload.single(`image`), ThreadController.postThread)
@@ -16,5 +21,6 @@ threadRouter.delete(`/reaction/:ThreadId`, ThreadController.unreactAThread)
 
 threadRouter.get(`/comments/:ThreadId`, ThreadController.getThreadComment)
 threadRouter.post(`/comments/:ThreadId`, ThreadController.comment)
+
 
 module.exports = threadRouter

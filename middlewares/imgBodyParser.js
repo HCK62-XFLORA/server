@@ -5,10 +5,12 @@ const multer = require(`multer`)
 const multers3 = require(`multer-s3`)
 
 const path = require(`path`)
-const fs = require(`fs`)
 
 const bucket = `xflorabucket/threadImages`
 const s3 = new S3({
+    region: process.env.REGION,
+    accessKeyId: process.env.S3_ACCESS_KEY,
+    secretAccessKey: process.env.S3_SECRET_KEY
 })
 
 const upload = multer({ 

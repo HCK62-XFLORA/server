@@ -39,6 +39,7 @@ class ThreadController {
             const { location } = file
 
             const newThread = await Thread.create({ UserId: 2, content, ForumId, imgUrl: location })
+            console.log(location)
             res.status(201).json(newThread)
         } catch (error) {
            next(error) 
@@ -136,6 +137,41 @@ class ThreadController {
             res.status(201).json(newComment)
         } catch (error) {
             next(error)
+        }
+    }
+
+    static async getPoints(req, res, next) {
+        try {
+            // const { id } = req.user
+
+            const threads = await Thread.findAll({ include: [`Comments`, `Reactions`], where: { UserId: 2 } })
+            // console.log(threads)
+            const likes = threads.map((thread) => {
+                if(thread.Reactions.reaction) {
+                    return thread.Reaction
+                }
+            })
+            const dislikes = threads.map((thread) => {
+                if(!thread.Reactions.reaction) {
+                    return thread.Reaction
+                }
+            })
+
+            const threadCount = threads.length
+            // const comments = threads.map((thread) => {
+            //     return threads.Comments
+            // })
+            res.json({ likes, dislikes, comments })
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    static async checkDisease(req, res, next) {
+        try {
+            console.log(req.file)
+        } catch (error) {
+          next(error)  
         }
     }
 }
