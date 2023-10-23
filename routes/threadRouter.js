@@ -7,10 +7,6 @@ const { authentication } = require("../middlewares/auth")
 
 threadRouter.get(`/`, ThreadController.getThreads)
 
-threadRouter.post(`/predict`, ThreadController.checkDisease)
-
-threadRouter.get(`/points`, authentication, ThreadController.getPoints)
-
 threadRouter.get(`/:ThreadId`, ThreadController.getThread)
 
 // threadRouter.use(authentication)

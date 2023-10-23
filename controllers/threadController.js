@@ -140,51 +140,6 @@ class ThreadController {
             next(error)
         }
     }
-
-    static async getPoints(req, res, next) {
-        try {
-            // const { id } = req.user
-
-            const threads = await Thread.findAll({ include: [`Comments`, `Reactions`], where: { UserId: 2 } })
-            // console.log(threads)
-            const likes = threads.map((thread) => {
-                if(thread.Reactions.reaction) {
-                    return thread.Reaction
-                }
-            })
-            const dislikes = threads.map((thread) => {
-                if(!thread.Reactions.reaction) {
-                    return thread.Reaction
-                }
-            })
-
-            const threadCount = threads.length
-            // const comments = threads.map((thread) => {
-            //     return threads.Comments
-            // })
-            res.json({ likes, dislikes, comments })
-        } catch (error) {
-            next(error)
-        }
-    }
-
-    static async checkDisease(req, res, next) {
-        try {
-            uploadSingle(req, res, (error) => {
-                if(error) return res.status(400).json({ message: `Only images are allowed!` })
-
-                predict(req.file.path)
-                .then((prediction) => {
-                    res.json(prediction)
-                })
-                .catch((error) => {
-                    throw error
-                })
-            })
-        } catch (error) {
-          next(error)  
-        }
-    }
 }
 
 module.exports = ThreadController

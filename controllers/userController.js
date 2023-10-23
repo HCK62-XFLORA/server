@@ -43,6 +43,28 @@ class UserController {
         }
     }
 
+    static async forgetPassword(req, res, next){
+        try {
+            const {email} = req.body
+
+            if(!email){
+                throw {name: "EmptyEmail"}
+            }
+
+            const user = await User.findOne({where: {email: email}})
+
+            if(!user){
+                throw "NotFound"
+            }
+
+            const token = generateToken({id: user.id})
+
+            
+        } catch (error) {
+            
+        }
+    }
+
     static async resetPassword(req, res, next){
         try {
             const {password} = req.body
@@ -152,6 +174,51 @@ class UserController {
             await MyPlant.destroy({where: {id: id}})
 
             res.status(200).json({message: "Your plant deleted successfully"})
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    static async checkDisease(req, res, next) {
+        try {
+            uploadSingle(req, res, (error) => {
+                if(error) return res.status(400).json({ message: `Only images are allowed!` })
+
+                predict(req.file.path)
+                .then((prediction) => {
+                    res.json(prediction)
+                })
+                .catch((error) => {
+                    throw error
+                })
+            })
+        } catch (error) {
+          next(error)  
+        }
+    }
+
+    static async getPoints(req, res, next) {
+        try {
+            // const { id } = req.user
+
+            const threads = await Thread.findAll({ include: [`Comments`, `Reactions`], where: { UserId: 2 } })
+            // console.log(threads)
+            const likes = threads.map((thread) => {
+                if(thread.Reactions.reaction) {
+                    return thread.Reaction
+                }
+            })
+            const dislikes = threads.map((thread) => {
+                if(!thread.Reactions.reaction) {
+                    return thread.Reaction
+                }
+            })
+
+            const threadCount = threads.length
+            // const comments = threads.map((thread) => {
+            //     return threads.Comments
+            // })
+            res.json({ likes, dislikes, comments })
         } catch (error) {
             next(error)
         }
