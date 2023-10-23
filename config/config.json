@@ -8,11 +8,12 @@
     "port": 5432
   },
   "test": {
-    "username": "root",
-    "password": null,
-    "database": "database_test",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "username": "postgres",
+    "password": "6tyBabfi52npculn",
+    "database": "postgres",
+    "host": "db.ixzanywhhfwcstbdhjih.supabase.co",
+    "dialect": "postgres",
+    "port": 5432
   },
   "production": {
     "use_env_variable": "DATABASE_URL"
