@@ -1,0 +1,23 @@
+const { server, PORT } = require(`../app`)
+const { Server } = require(`socket.io`)
+
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+    },
+})
+
+io.on(`connection`, (socket) => {
+    console.log(`A user connected with id ${socket.id}`)
+    socket.on(`comment`, (comment) => {
+        console.log(comment)
+        socket.broadcast.emit(`newComment`, (comment))
+    })
+})
+
+server.listen(PORT, () => console.log(`Server is listening on port ${PORT}`))
+
+module.exports = {
+    io,
+    server
+}
