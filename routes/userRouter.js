@@ -7,8 +7,9 @@ userRouter.post('/register', UserController.register)
 userRouter.patch('/reset-password/:token', UserController.resetPassword)
 userRouter.get('/profile/:id', UserController.getUser)
 userRouter.put('/profile/:id', UserController.updateProfile)
+userRouter.get('/my-plant', UserController.getPlants)
 userRouter.post('/my-plant', UserController.addMyPlant)
-userRouter.put('/my-plant/:id', UserController.updateMyPlant)
+// userRouter.put('/my-plant/:id', UserController.updateMyPlant)
 userRouter.delete('/my-plant/:id', UserController.removePlant)
 
 module.exports = userRouter

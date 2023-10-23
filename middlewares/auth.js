@@ -20,21 +20,28 @@ async function authentication(req, res, next){
     }
 }
 
-async function authorization(req, res, next){
+async function usefulAuthorization(req, res, next){
     try {
         const {id, username} = req.user
 
-        const thread = Thread.findByPk(req.params.id)
+        const thread = await Thread.findByPk(req.params.id)
 
         if(!thread){
             throw {name: "NotFound"}
         }
+
+        if(thread.UserId !== id){
+            throw {name: "Forbidden"}
+        }
+
+
+        next()
     } catch (error) {
-        
+        next(Error)
     }
 }
 
 module.exports = {
     authentication,
-    authorization
+    usefulAuthorization
 }
