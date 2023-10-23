@@ -20,7 +20,7 @@ async function authentication(req, res, next){
     }
 }
 
-async function authorization(req, res, next){
+async function usefulAuthorization(req, res, next){
     try {
         const {id, username} = req.user
 
@@ -30,6 +30,9 @@ async function authorization(req, res, next){
             throw {name: "NotFound"}
         }
 
+        if(thread.UserId !== id){
+            throw {name: "Forbidden"}
+        }
 
 
         next()
@@ -40,5 +43,5 @@ async function authorization(req, res, next){
 
 module.exports = {
     authentication,
-    authorization
+    usefulAuthorization
 }
