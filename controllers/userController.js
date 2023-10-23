@@ -62,7 +62,7 @@ class UserController {
                 throw {name: "NotFound"}
             }
 
-            res.status(200).json({user})
+            res.status(200).json(user)
         } catch (error) {
             console.log(error);
             next(error)
@@ -87,10 +87,21 @@ class UserController {
         }
     }
 
+    static async getMyPlant(req, res, next){
+        try {
+            const {id} = req.user
+            const myPlant = await MyPlant.findAll({where: {UserId: id}})
+
+            res.status(200).json(myPlant)
+        } catch (error) {
+            
+        }
+    }
+
     static async getPlants(req, res, next){
         try {
             const plants = await Plant.findAll()
-            res.status(200).json({plants})
+            res.status(200).json(plants)
         } catch (error) {
             next(error)
         }
