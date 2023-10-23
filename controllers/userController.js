@@ -15,7 +15,7 @@ class UserController {
                 throw {name: "EmptyPassword"}
             }
 
-            const user =await User.findOne({where: email})
+            const user =await User.findOne({where: {email: email}})
 
             if(!user || !comparePass(password, user.password)){
                 throw {name: "Unauthorized"}
@@ -32,16 +32,18 @@ class UserController {
     static async register(req, res, next){
         try {
             const {email, password, username, birthday, gender} = req.body
+            console.log(req.body);
 
             await User.create({email, password, username, birthday, gender})
 
             res.status(201).json({message: "Create account success"})
         } catch (error) {
+            console.log(error);
             next(error)
         }
     }
 
-    static async resetPassword(res, res, next){
+    static async resetPassword(req, res, next){
         try {
             const {password} = req.body
             await User.update({password: password}, {where: {}})
@@ -54,7 +56,7 @@ class UserController {
     static async getUser(req, res, next){
         try {
             const {id} = req.params
-            const user = await User.findByPk(id, {include: {model: MyPlant}, where: {UserId: id}})
+            const user = await User.findByPk(id, {include: {model: MyPlant}, where: {UserId: id}, attributes : { exclude: ['password']}})
 
             if(!user){
                 throw {name: "NotFound"}
@@ -62,6 +64,7 @@ class UserController {
 
             res.status(200).json({user})
         } catch (error) {
+            console.log(error);
             next(error)
         }
     }
@@ -95,10 +98,11 @@ class UserController {
 
     static async addMyPlant(req, res, next){
         try {
-            const {PlantId, imgUrl} = req.body
+            const {PlantId} = req.body
             const {id} = req.user
+            const {location} = req.file
 
-            await MyPlant.create({PlantId, UserId: id, imgUrl})
+            await MyPlant.create({PlantId, UserId: id, imgUrl: location})
             res.status(201).json({message: "Your plant added successfully"})
         } catch (error) {
             next(error)

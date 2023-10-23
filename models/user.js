@@ -73,6 +73,7 @@ module.exports = (sequelize, DataTypes) => {
       beforeCreate: (user) => {
         user.badge = "Beginner"
         user.password = hashPass(user.password)
+        user.point = 0
       },
       beforeUpdate: (user) => {
         user.password =hashPass(user.password)

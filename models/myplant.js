@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       MyPlant.belongsTo(models.User, {foreignKey: "UserId"})
-      // MyPlant.belongsTo(models.Plant, {foreignKey: "PlantId"}) //INI HARUS DIBUAT WOIIII JANGAN LUPAAA
+      MyPlant.belongsTo(models.Plant, {foreignKey: "PlantId"})
     }
   }
   MyPlant.init({
