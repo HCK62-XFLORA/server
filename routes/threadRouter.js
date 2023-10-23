@@ -3,15 +3,18 @@ const threadRouter = express.Router()
 const ThreadController = require("../controllers/threadController")
 
 const { upload } = require("../middlewares/imgBodyParser")
-const { uploadLocal } = require("../helpers/tensorflow")
+const { authentication } = require("../middlewares/auth")
+
+threadRouter.get(`/`, ThreadController.getThreads)
 
 threadRouter.post(`/predict`, ThreadController.checkDisease)
 
-threadRouter.get(`/points`, ThreadController.getPoints)
+threadRouter.get(`/points`, authentication, ThreadController.getPoints)
 
-threadRouter.get(`/`, ThreadController.getThreads)
-threadRouter.post(`/`, upload.single(`image`), ThreadController.postThread)
 threadRouter.get(`/:ThreadId`, ThreadController.getThread)
+
+// threadRouter.use(authentication)
+threadRouter.post(`/`, upload.single(`image`), ThreadController.postThread)
 threadRouter.put(`/:ThreadId`, ThreadController.editThread)
 threadRouter.delete(`/:ThreadId`, ThreadController.deleteThread)
 

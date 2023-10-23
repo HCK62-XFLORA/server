@@ -1,5 +1,7 @@
 const { Thread, Comment, Reaction } = require(`../models`)
 
+const { uploadSingle, predict } = require("../helpers/tensorflow")
+
 class ThreadController {
 
     static async getThread(req, res, next) {
@@ -39,7 +41,6 @@ class ThreadController {
             const { location } = file
 
             const newThread = await Thread.create({ UserId: 2, content, ForumId, imgUrl: location })
-            console.log(location)
             res.status(201).json(newThread)
         } catch (error) {
            next(error) 
@@ -169,7 +170,17 @@ class ThreadController {
 
     static async checkDisease(req, res, next) {
         try {
-            console.log(req.file)
+            uploadSingle(req, res, (error) => {
+                if(error) return res.status(400).json({ message: `Only images are allowed!` })
+
+                predict(req.file.path)
+                .then((prediction) => {
+                    res.json(prediction)
+                })
+                .catch((error) => {
+                    throw error
+                })
+            })
         } catch (error) {
           next(error)  
         }
