@@ -7,6 +7,8 @@ const PORT = process.env.PORT || 3000
 const cors = require(`cors`)
 const router = require(`./routes/index`)
 
+const server = require(`http`).createServer(app)
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors())
@@ -16,4 +18,9 @@ app.get(`/`, (req, res) => res.send(`Hi there!`))
 
 
 
-app.listen(PORT, () => console.log(`App is listening on port ${PORT}`))
+// app.listen(PORT, () => console.log(`App is listening on port ${PORT}`))
+module.exports = {
+    server,
+    PORT,
+    app
+}

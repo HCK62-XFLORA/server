@@ -1,6 +1,7 @@
 const { Thread, Comment, Reaction } = require(`../models`)
 
 const { uploadSingle, predict } = require("../helpers/tensorflow")
+const { io } = require("../bin/www")
 
 class ThreadController {
 
@@ -137,6 +138,7 @@ class ThreadController {
             const newComment = await Comment.create({ UserId: id, ThreadId, comment })
             res.status(201).json(newComment)
         } catch (error) {
+            console.log(error)
             next(error)
         }
     }

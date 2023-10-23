@@ -20,9 +20,30 @@ module.exports = {
       el.updatedAt = new Date()
       return el
     })
+
+    const forum = [
+      {
+        name: "Tips and trick",
+        imgUrl: "",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: "Disease",
+        imgUrl: "",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: "Stories",
+        imgUrl: "",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]
     await queryInterface.bulkInsert("Plants", plant, {})
     await queryInterface.insert(null, `Users`, { email: `gaw@mail.com`, password: hashPass(`gawgaw`), username: `gawz`, birthday: `10/15/2001`, gender: `Male`, badge: `Beginner`, point: 0, createdAt: new Date(), updatedAt: new Date } )
-    await queryInterface.insert(null, `Forums`, { name: `forum-1`, imgUrl: `http://google.com/`, createdAt: new Date(), updatedAt: new Date() })
+    await queryInterface.bulkInsert(`Forums`, forum, {})
   },
 
   async down (queryInterface, Sequelize) {

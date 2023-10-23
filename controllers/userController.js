@@ -34,9 +34,9 @@ class UserController {
             const {email, password, username, birthday, gender} = req.body
             console.log(req.body);
 
-            await User.create({email, password, username, birthday, gender})
+            const user = await User.create({email, password, username, birthday, gender})
 
-            res.status(201).json({message: "Create account success"})
+            res.status(201).json({id: user.id, email: email})
         } catch (error) {
             console.log(error);
             next(error)
@@ -59,7 +59,7 @@ class UserController {
 
             const token = generateToken({id: user.id})
 
-            
+
         } catch (error) {
             
         }
