@@ -1,5 +1,6 @@
 const { comparePass } = require('../helpers/bcrypt')
 const { generateToken } = require('../helpers/jwt')
+const { uploadSingle, predict } = require('../helpers/tensorflow')
 const {User, MyPlant, Plant} = require('../models/index')
 
 class UserController {
