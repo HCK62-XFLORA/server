@@ -1,7 +1,6 @@
-const { Thread, Comment, Reaction } = require(`../models`)
+const { Thread, Comment, Reaction, Forum } = require(`../models`)
 
 const { uploadSingle, predict } = require("../helpers/tensorflow")
-const { io } = require("../bin/www")
 
 class ThreadController {
 
@@ -20,61 +19,65 @@ class ThreadController {
 
     static async getThreads(req, res, next) {
         try {
-            const { nthThreads, title } = req.query
+            const { nthThreads, ForumId } = req.query
             const limit = 5
-            let option = { limit, offset: (nthThreads - 1) * limit, order: [[`updatedAt`, `ASC`]], attributes: { exclude: [`updatedAt`] }}
+            let option = { include: [`Reactions`], limit, offset: (nthThreads -1) * limit, order: [[`updatedAt`, `DESC`]]}
 
-            if(title) option.where = { title }
+            if(!nthThreads) return res.status(400).json({ message: `Query cannot be empty` })
+
+            if(ForumId) option.where = { ForumId }
 
             const threads = await Thread.findAll(option)
+
             res.json(threads)
         } catch (error) {
-            console.log(error)
             next(error)
         }
     }
 
     static async postThread(req, res, next) {
         try {
-            // const { id } = req.user
+            const { id } = req.user
+            if(!req.file) return res.status(400).json({ message: `Image is required!` })
+            console.log(id, `=============================`)
             const { file, body } = req
-            const {  content, ForumId } = body
+            const {  content, ForumId, title } = body
             const { location } = file
 
-            const newThread = await Thread.create({ UserId: 2, content, ForumId, imgUrl: location })
+            const newThread = await Thread.create({ UserId: id, content, ForumId, imgUrl: location, title })
             res.status(201).json(newThread)
         } catch (error) {
            next(error) 
         }
     }
 
-    static async editThread(req, res, next) {
-        try {
-            const { id } = req.user
-            const { ThreadId } = req.params
-            const { imgUrl, content, ForumId } = req.body
+    // static async editThread(req, res, next) {
+    //     try {
+    //         const { id } = req.user
+    //         const { ThreadId } = req.params
+    //         const { imgUrl, content, ForumId } = req.body
 
-            const editedThread = await Thread.update({ imgUrl, ThreadId, content, ForumId }, { where: { id } })
-            res.json(editedThread)
-        } catch (error) {
-            next(error)
-        }
-    }
+    //         const editedThread = await Thread.update({ imgUrl, ThreadId, content, ForumId }, { where: { id } })
+    //         res.json(editedThread)
+    //     } catch (error) {
+    //         next(error)
+    //     }
+    // }
 
-    static async deleteThread(req, res, next) {
-        try {
-           const { id } = req.user
-           const { ThreadId } = req.params
+    // static async deleteThread(req, res, next) {
+    //     try {
+    //        const { id } = req.user
+    //        const { ThreadId } = req.params
 
-           const targetThread = await Thread.findByPk(ThreadId)
-           if(!targetThread) return res.status(404).json({ message: `Thread not found!` })
+    //        const targetThread = await Thread.findByPk(ThreadId)
+    //        if(!targetThread) return res.status(404).json({ message: `Thread not found!` })
 
-           await Thread.destroy({ where: { id: ThreadId } })
-           res.json({ message: `Thread deleted` })
-        } catch (error) {
-           next(error) 
-        }
-    }
+    //        await Thread.destroy({ where: { id: ThreadId } })
+    //        res.json({ message: `Thread deleted` })
+    //     } catch (error) {
+    //        next(error) 
+    //     }
+    // }
 
     static async getThreadReactions(req, res, next) {
         try {
@@ -82,6 +85,7 @@ class ThreadController {
             const { ThreadId } = req.params
 
             const threadReactions = await Reaction.findAll({ where: { ThreadId } })
+            if(!threadReactions) return res.status(404).json({ message: `Thread not found` })
             const likes = threadReactions.filter((reaction) => threadReactions.reaction == true).length
             const dislikes = threadReactions.filter((reaction) => threadReactions.reaction == false).length
             res.json({ likes, dislikes })
@@ -106,17 +110,17 @@ class ThreadController {
         }
     }
 
-    static async unreactAThread(req, res, next) {
-        try {
-            const { id } = req.user
-            const { ThreadId } = req.params
+    // static async unreactAThread(req, res, next) {
+    //     try {
+    //         const { id } = req.user
+    //         const { ThreadId } = req.params
 
-            const unreact = await Reaction.destroy({ where: { UserId: id, ThreadId } })
-            res.json(unreact)
-        } catch (error) {
-            next(error)
-        }
-    }
+    //         const unreact = await Reaction.destroy({ where: { UserId: id, ThreadId } })
+    //         res.json(unreact)
+    //     } catch (error) {
+    //         next(error)
+    //     }
+    // }
 
     static async getThreadComment(req, res, next) {
         try {
@@ -138,7 +142,6 @@ class ThreadController {
             const newComment = await Comment.create({ UserId: id, ThreadId, comment })
             res.status(201).json(newComment)
         } catch (error) {
-            console.log(error)
             next(error)
         }
     }

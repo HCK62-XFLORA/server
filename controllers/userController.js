@@ -39,7 +39,6 @@ class UserController {
 
             res.status(201).json({id: user.id, email: email})
         } catch (error) {
-            console.log(error);
             next(error)
         }
     }
@@ -62,7 +61,7 @@ class UserController {
 
 
         } catch (error) {
-            
+            next(error)
         }
     }
 
@@ -87,28 +86,27 @@ class UserController {
 
             res.status(200).json(user)
         } catch (error) {
-            console.log(error);
             next(error)
         }
     }
 
-    static async updateProfile(req, res, next){
-        try {
-            const {email, password, username, birthday, gender} = req.body
-            const {id} = req.params
-            const user = await User.findByPk(id)
+    // static async updateProfile(req, res, next){
+    //     try {
+    //         const {email, password, username, birthday, gender} = req.body
+    //         const {id} = req.params
+    //         const user = await User.findByPk(id)
 
-            if(!user){
-                throw {name: "NotFound"}
-            }
+    //         if(!user){
+    //             throw {name: "NotFound"}
+    //         }
 
-            await User.update({email, password, username, birthday, gender}, {where: {id: id}})
+    //         await User.update({email, password, username, birthday, gender}, {where: {id: id}})
 
-            res.status(200).json({message: "Update user profile success"})
-        } catch (error) {
-            next(error)
-        }
-    }
+    //         res.status(200).json({message: "Update user profile success"})
+    //     } catch (error) {
+    //         next(error)
+    //     }
+    // }
 
     static async getMyPlant(req, res, next){
         try {
@@ -117,7 +115,7 @@ class UserController {
 
             res.status(200).json(myPlant)
         } catch (error) {
-            
+            next(error)
         }
     }
 
@@ -182,12 +180,18 @@ class UserController {
 
     static async checkDisease(req, res, next) {
         try {
+            const { id } = req.User
             uploadSingle(req, res, (error) => {
                 if(error) return res.status(400).json({ message: `Only images are allowed!` })
-
                 predict(req.file.path)
                 .then((prediction) => {
-                    res.json(prediction)
+                    MyPlant.patch({ prediction }, { where: { UserId: id } })
+                    .then(() => {
+                        res.json(prediction)
+                    })
+                    .catch((error) => {
+                        throw error
+                    })
                 })
                 .catch((error) => {
                     throw error

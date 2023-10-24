@@ -6,14 +6,21 @@ const fs = require(`fs`)
 
 const multer = require(`multer`)
 const sharp = require(`sharp`)
-const { allowedFileExt } = require("../middlewares/imgBodyParser")
 
 const storage = multer.diskStorage({ destination: (req, file, callback) => { callback(null, `./helpers/images`)}, filename: (req, file, callback) => { callback(null, Date.now().toString() + path.extname(file.originalname)) } })
 
 const uploadLocal = multer({
     storage,
     fileFilter: (req, file, callback) => {
-        allowedFileExt(file, callback)
+        const fileExts = [`.png`, `.jpg`, `.jpeg`];
+
+        const isAllowedExt = fileExts.includes(
+            path.extname(file.originalname.toLowerCase())
+        );
+
+        const isAllowedMimeType = file.mimetype.startsWith("image/");
+        if(isAllowedExt && isAllowedMimeType) return callback(null, true)
+        return callback({ name: `InvalidFileExt`, message: `This file type is not allowed!` })
     }
 })
 
