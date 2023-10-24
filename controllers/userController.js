@@ -1,7 +1,7 @@
 const { comparePass } = require('../helpers/bcrypt')
 const { generateToken } = require('../helpers/jwt')
-const { uploadSingle } = require('../helpers/tensorflow')
 const {User, MyPlant, Plant, Reward, MyReward} = require('../models/index')
+const { uploadSingle, predict } = require('../helpers/tensorflow')
 
 class UserController {
     static async login(req, res, next){

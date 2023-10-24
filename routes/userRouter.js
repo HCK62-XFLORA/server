@@ -4,7 +4,6 @@ const { upload } = require("../middlewares/imgBodyParser")
 const { authentication } = require("../middlewares/auth")
 const userRouter = express.Router()
 
-
 userRouter.post('/login', UserController.login)
 userRouter.post('/register', UserController.register)
 userRouter.post('/forgot-password', UserController.forgetPassword)
