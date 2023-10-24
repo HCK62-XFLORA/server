@@ -4,9 +4,8 @@ const {User, Thread} = require('../models')
 async function authentication(req, res, next){
     try {
         const {access_token} = req.headers
-
         const payload = verifyToken(access_token)
-
+        console.log(payload)
         const user = await User.findByPk(payload.id)
 
         if(!user){

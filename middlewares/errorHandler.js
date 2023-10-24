@@ -55,6 +55,7 @@ function errorHandler(error, req, res, next){
             message = "Field cannot be empty"
     }
 
+    console.log(status, message, `<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`)
     res.status(status).json({message})
 }
 
