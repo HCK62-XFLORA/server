@@ -1,7 +1,7 @@
 const OpenAI = require("openai");
 
 const openai = new OpenAI({
-  apiKey: "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", // defaults to process.env["OPENAI_API_KEY"]
+  apiKey: process.env.API_KEY_CHATGPT, // defaults to process.env["OPENAI_API_KEY"]
 });
 
 module.exports = class AskController {
@@ -17,7 +17,7 @@ module.exports = class AskController {
       } else if (questionType === "masalah") {
         content = `Masalah yang terkait dengan tanaman: ${message}`;
       } else {
-        return res.status(400).json({ error: "Tipe pertanyaan tidak valid" });
+        return res.status(404).json({ error: "Tipe pertanyaan tidak valid" });
       }
 
       const completion = await openai.chat.completions.create({
