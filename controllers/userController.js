@@ -131,22 +131,7 @@ class UserController {
         }
     }
 
-    static async getSinglePlant(req, res, next){
-        try {
-            const {id} = req.params
-
-            const plant = await Plant.findByPk(id)
-
-            if(!plant){
-                throw {name: "NotFound"}
-            }
-
-            res.status(200).json(plant)
-        } catch (error) {
-            next(error)
-        }
-    }
-
+    
     static async addMyPlant(req, res, next){
         try {
             const {PlantId} = req.body
@@ -166,27 +151,44 @@ class UserController {
             next(error)
         }
     }
-
+    
     // static async updateMyPlant(req, res, next){
-    //     try {
-    //         const {PlantId, imgUrl} = req.body
-    //         const {id} = req.user
-    //         const {id: MyPlantId} = req.params
-
-    //         const myPlant = await MyPlant.findByPk(MyPlantId)
-
-    //         if(!myPlant){
-    //             throw {name: "NotFound"}
-    //         }
+        //     try {
+            //         const {PlantId, imgUrl} = req.body
+            //         const {id} = req.user
+            //         const {id: MyPlantId} = req.params
             
-    //         await MyPlant.update({PlantId, UserId: id, imgUrl}, {where: {id: MyPlantId}})
-    //         res.status(200).json({message: "Your plant updated successfully"})
-    //     } catch (error) {
-    //         next(error)
-    //     }
-    // }
-
-    static async removePlant(req, res, next){
+            //         const myPlant = await MyPlant.findByPk(MyPlantId)
+            
+            //         if(!myPlant){
+                //             throw {name: "NotFound"}
+                //         }
+                
+                //         await MyPlant.update({PlantId, UserId: id, imgUrl}, {where: {id: MyPlantId}})
+                //         res.status(200).json({message: "Your plant updated successfully"})
+                //     } catch (error) {
+                    //         next(error)
+                    //     }
+                    // }
+                    
+        static async getSingleMyPlant(req, res, next){
+            try {
+                const {id} = req.params
+                const {id: UserId} = req.user
+    
+                const myPlant = await MyPlant.findByPk(id, {where: {UserId: UserId}})
+    
+                if(!myPlant){
+                    throw {name: "NotFound"}
+                }
+    
+                res.status(200).json(myPlant)
+            } catch (error) {
+                next(error)
+            }
+        }
+        
+        static async removePlant(req, res, next){
         try {
             const {id} = req.params
 
