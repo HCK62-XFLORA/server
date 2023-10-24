@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Comment, {foreignKey: "UserId"})
       User.hasMany(models.MyPlant, {foreignKey: "UserId"})
       User.hasMany(models.Reaction, {foreignKey: "UserId"})
+      User.hasMany(models.MyReward, {foreignKey: "UserId"})
     }
   }
   User.init({
@@ -51,11 +52,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     birthday: {
       type: DataTypes.DATE,
-      allowNull: false,
-      validate: {
-        notNull: {msg: "Birthday cannot be empty"},
-        notEmpty: {msg: "Birthday cannot be empty"}
-      }
     },
     gender: {
       type: DataTypes.ENUM(["Male", "Female"]),

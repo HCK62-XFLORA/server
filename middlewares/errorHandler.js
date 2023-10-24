@@ -45,6 +45,14 @@ function errorHandler(error, req, res, next){
         case "InvalidFileExt" :
             status = 400
             message = error.message
+        break
+        case "EmptyImage" :
+            status = 400
+            message = "Image cannot be empty"
+        break
+        case "EmptyField" :
+            status = 400
+            message = "Field cannot be empty"
     }
 
     res.status(status).json({message})
