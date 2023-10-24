@@ -10,8 +10,6 @@ const server = http.createServer(app);
 
 const io = configureSocket(server)
 
-const PORT = process.env.PORT || 3000;
-
 const cors = require(`cors`);
 const router = require(`./routes/index`);
 
@@ -23,4 +21,6 @@ app.use(`/`, router);
 
 app.get(`/`, (req, res) => res.send(`Hi there!`));
 
-server.listen(PORT, () => console.log(`App is listening on port ${PORT}`));
+// server.listen(PORT, () => console.log(`App is listening on port ${PORT}`));
+
+module.exports = { app, server, io};
