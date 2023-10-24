@@ -11,7 +11,7 @@ userRouter.post('/forgot-password', UserController.forgetPassword)
 userRouter.patch('/reset-password/:token', UserController.resetPassword)
 
 userRouter.use(authentication)
-threadRouter.get(`/points`, UserController.getPoints)
+userRouter.get(`/points`, UserController.getPoints)
 userRouter.get('/profile/:id', UserController.getUser)
 userRouter.put('/profile/:id', UserController.updateProfile)
 userRouter.get('my-plant', UserController.getMyPlant)
@@ -20,7 +20,10 @@ userRouter.post('/my-plant', upload.single('image'), UserController.addMyPlant)
 // userRouter.put('/my-plant/:id', UserController.updateMyPlant)
 userRouter.delete('/my-plant/:id', UserController.removePlant)
 
-threadRouter.post(`/predict`, UserController.checkDisease)
+userRouter.post(`/predict`, UserController.checkDisease)
+
+userRouter.get('/reward', UserController.getReward)
+userRouter.patch('/claim-reward/:rewardId', UserController.claimReward)
 
 
 module.exports = userRouter

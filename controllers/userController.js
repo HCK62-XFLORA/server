@@ -1,6 +1,7 @@
 const { comparePass } = require('../helpers/bcrypt')
 const { generateToken } = require('../helpers/jwt')
-const {User, MyPlant, Plant} = require('../models/index')
+const { uploadSingle } = require('../helpers/tensorflow')
+const {User, MyPlant, Plant, Reward, MyReward} = require('../models/index')
 
 class UserController {
     static async login(req, res, next){
@@ -23,7 +24,7 @@ class UserController {
 
             const access_token = generateToken({id: user.id})
 
-            res.status(200).json({access_token})
+            res.status(200).json({access_token, id: user.id})
         } catch (error) {
             next(error)
         }
@@ -43,37 +44,37 @@ class UserController {
         }
     }
 
-    static async forgetPassword(req, res, next){
-        try {
-            const {email} = req.body
+    // static async forgetPassword(req, res, next){
+    //     try {
+    //         const {email} = req.body
 
-            if(!email){
-                throw {name: "EmptyEmail"}
-            }
+    //         if(!email){
+    //             throw {name: "EmptyEmail"}
+    //         }
 
-            const user = await User.findOne({where: {email: email}})
+    //         const user = await User.findOne({where: {email: email}})
 
-            if(!user){
-                throw "NotFound"
-            }
+    //         if(!user){
+    //             throw "NotFound"
+    //         }
 
-            const token = generateToken({id: user.id})
+    //         const token = generateToken({id: user.id})
 
 
-        } catch (error) {
+    //     } catch (error) {
             
-        }
-    }
+    //     }
+    // }
 
-    static async resetPassword(req, res, next){
-        try {
-            const {password} = req.body
-            await User.update({password: password}, {where: {}})
-            res.status(200).json({message: "Reset password success"})
-        } catch (error) {
-            next(error)
-        }
-    }
+    // static async resetPassword(req, res, next){
+    //     try {
+    //         const {password} = req.body
+    //         await User.update({password: password}, {where: {}})
+    //         res.status(200).json({message: "Reset password success"})
+    //     } catch (error) {
+    //         next(error)
+    //     }
+    // }
 
     static async getUser(req, res, next){
         try {
@@ -219,6 +220,36 @@ class UserController {
             //     return threads.Comments
             // })
             res.json({ likes, dislikes, comments })
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    static async getReward(req, res, next){
+        try {
+            const reward = await Reward.findAll()
+            res.status(200).json(reward)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    static async claimReward(req, res, next){
+        try {
+            const {rewardId} = req.params
+            const {id} = req.user
+
+            const user = await User.findByPk(id)
+            const reward = await Reward.findByPk(rewardId)
+
+            if(user.point >= reward.point){
+                point = user.point - reward.point
+                await User.update(point, {where: {id: id}})
+                await MyReward.create(UserId: id, RewardId: rewardId)
+            } else {
+                throw {name: "Insufficient"}
+            }
+            
         } catch (error) {
             next(error)
         }

@@ -9,11 +9,11 @@
   },
   "test": {
     "username": "postgres",
-    "password": "6tyBabfi52npculn",
-    "database": "postgres",
-    "host": "db.ixzanywhhfwcstbdhjih.supabase.co",
+    "password": "postgres",
+    "database": "final_project_test_db",
+    "host": "localhost",
     "dialect": "postgres",
-    "port": 5432
+    "port": 5433
   },
   "production": {
     "use_env_variable": "DATABASE_URL"
