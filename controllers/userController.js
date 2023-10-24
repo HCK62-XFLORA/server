@@ -1,6 +1,6 @@
 const { comparePass } = require('../helpers/bcrypt')
 const { generateToken } = require('../helpers/jwt')
-const {User, MyPlant, Plant, Reward, MyReward} = require('../models/index')
+const {User, MyPlant, Plant, Reward, MyReward, Thread} = require('../models/index')
 const { uploadSingle, predict } = require('../helpers/tensorflow')
 
 class UserController {
@@ -79,7 +79,10 @@ class UserController {
     static async getUser(req, res, next){
         try {
             const {id} = req.params
-            const user = await User.findByPk(id, {include: {model: MyPlant}, where: {UserId: id}, attributes : { exclude: ['password']}})
+            const user = await User.findByPk(id, {include: [{
+                model: MyPlant,
+                include: [Plant]
+            }, 'Threads', 'MyRewards'], where: {UserId: id}, attributes : { exclude: ['password']}})
 
             if(!user){
                 throw {name: "NotFound"}
@@ -92,32 +95,32 @@ class UserController {
         }
     }
 
-    static async updateProfile(req, res, next){
-        try {
-            const {email, password, username, birthday, gender} = req.body
-            const {id} = req.params
-            const user = await User.findByPk(id)
+    // static async updateProfile(req, res, next){
+    //     try {
+    //         const {email, password, username, birthday, gender} = req.body
+    //         const {id} = req.params
+    //         const user = await User.findByPk(id)
 
-            if(!user){
-                throw {name: "NotFound"}
-            }
+    //         if(!user){
+    //             throw {name: "NotFound"}
+    //         }
 
-            await User.update({email, password, username, birthday, gender}, {where: {id: id}})
+    //         await User.update({email, password, username, birthday, gender}, {where: {id: id}})
 
-            res.status(200).json({message: "Update user profile success"})
-        } catch (error) {
-            next(error)
-        }
-    }
+    //         res.status(200).json({message: "Update user profile success"})
+    //     } catch (error) {
+    //         next(error)
+    //     }
+    // }
 
     static async getMyPlant(req, res, next){
         try {
             const {id} = req.user
-            const myPlant = await MyPlant.findAll({where: {UserId: id}})
+            const myPlant = await MyPlant.findAll({include: Plant}, {where: {UserId: id}})
 
             res.status(200).json(myPlant)
         } catch (error) {
-            
+            next(error)
         }
     }
 
@@ -130,12 +133,35 @@ class UserController {
         }
     }
 
+    static async getSinglePlant(req, res, next){
+        try {
+            const {id} = req.params
+
+            const plant = await Plant.findByPk(id)
+
+            if(!plant){
+                throw {name: "NotFound"}
+            }
+
+            res.status(200).json(plant)
+        } catch (error) {
+            next(error)
+        }
+    }
+
     static async addMyPlant(req, res, next){
         try {
+
+            if(!PlantId){
+                throw {name: "EmptyField"}
+            }
+            if(!req.file){
+                throw {name: "EmptyImage"}
+            }
+            
             const {PlantId} = req.body
             const {id} = req.user
             const {location} = req.file
-
             await MyPlant.create({PlantId, UserId: id, imgUrl: location})
             res.status(201).json({message: "Your plant added successfully"})
         } catch (error) {
