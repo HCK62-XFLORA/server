@@ -39,7 +39,6 @@ class UserController {
 
             res.status(201).json({id: user.id, email: email})
         } catch (error) {
-            console.log(error);
             next(error)
         }
     }
@@ -90,7 +89,6 @@ class UserController {
 
             res.status(200).json(user)
         } catch (error) {
-            console.log(error);
             next(error)
         }
     }
@@ -208,12 +206,18 @@ class UserController {
 
     static async checkDisease(req, res, next) {
         try {
+            const { id } = req.User
             uploadSingle(req, res, (error) => {
                 if(error) return res.status(400).json({ message: `Only images are allowed!` })
-
                 predict(req.file.path)
                 .then((prediction) => {
-                    res.json(prediction)
+                    MyPlant.patch({ prediction }, { where: { UserId: id } })
+                    .then(() => {
+                        res.json(prediction)
+                    })
+                    .catch((error) => {
+                        throw error
+                    })
                 })
                 .catch((error) => {
                     throw error
