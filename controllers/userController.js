@@ -245,11 +245,11 @@ class UserController {
             if(user.point >= reward.point){
                 point = user.point - reward.point
                 await User.update(point, {where: {id: id}})
-                await MyReward.create(UserId: id, RewardId: rewardId)
+                await MyReward.create({UserId: id, RewardId: rewardId})
             } else {
                 throw {name: "Insufficient"}
             }
-            
+            res.status(200).json({message: "Success"})
         } catch (error) {
             next(error)
         }
