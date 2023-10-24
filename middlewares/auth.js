@@ -3,7 +3,7 @@ const {User, Thread} = require('../models')
 
 async function authentication(req, res, next){
     try {
-        const {access_token} = req.header
+        const {access_token} = req.headers
 
         const payload = verifyToken(access_token)
 

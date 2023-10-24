@@ -1,0 +1,12 @@
+[
+  {
+    "ThreadId": 1,
+    "UserId": 2,
+    "reaction": true
+  },
+  {
+    "ThreadId": 2,
+    "UserId": 1,
+    "reaction": false
+  }
+]

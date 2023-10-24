@@ -1,0 +1,20 @@
+[
+  {
+    "username": "user1",
+    "email": "user1@example.com",
+    "password": "password123",
+    "birthday": "1990-01-01",
+    "gender": "Male",
+    "badge": "Beginner",
+    "point": 1000
+  },
+  {
+    "username": "user2",
+    "email": "user2@example.com",
+    "password": "securepass",
+    "birthday": "1985-05-15",
+    "gender": "Female",
+    "badge": "Intermediate",
+    "point": 750
+  }
+]

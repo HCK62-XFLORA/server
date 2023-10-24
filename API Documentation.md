@@ -71,6 +71,7 @@ _Threads_
 _Comments_
 
 ```
+- UserId : integer, required
 - ThreadId: integer, required
 - comment: string, required
 - isUseFul : boolean, required

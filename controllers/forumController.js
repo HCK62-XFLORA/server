@@ -33,4 +33,5 @@ module.exports = class ForumController {
         next(error)
       }
     }
+  
 }
