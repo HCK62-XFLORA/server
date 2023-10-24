@@ -38,6 +38,13 @@ function errorHandler(error, req, res, next){
             status = 404
             message = "Not Found"
         break
+        case "EmptyImage" :
+            status = 400
+            message = "Image cannot be empty"
+        break
+        case "EmptyField" :
+            status = 400
+            message = "Field cannot be empty"
     }
 
     res.status(status).json({message})

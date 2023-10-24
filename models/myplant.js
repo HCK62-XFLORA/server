@@ -39,6 +39,12 @@ module.exports = (sequelize, DataTypes) => {
         notNull: {msg: "Image cannot be empty"},
         notEmpty: {msg: "Image cannot be empty"}
       }
+    },
+    disease: {
+      type: DataTypes.STRING
+    },
+    confidence: {
+      type: DataTypes.FLOAT
     }
   }, {
     sequelize,
