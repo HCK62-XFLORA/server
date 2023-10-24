@@ -39,7 +39,6 @@ class UserController {
 
             res.status(201).json({id: user.id, email: email})
         } catch (error) {
-            console.log(error);
             next(error)
         }
     }
@@ -90,7 +89,6 @@ class UserController {
 
             res.status(200).json(user)
         } catch (error) {
-            console.log(error);
             next(error)
         }
     }
@@ -136,7 +134,7 @@ class UserController {
     
     static async addMyPlant(req, res, next){
         try {
-            
+            const {PlantId} = req.body
             if(!PlantId){
                 throw {name: "EmptyField"}
             }
@@ -144,7 +142,7 @@ class UserController {
                 throw {name: "EmptyImage"}
             }
             
-            const {PlantId} = req.body
+            console.log(PlantId,`=============================`)
             const {id} = req.user
             const {location} = req.file
             await MyPlant.create({PlantId, UserId: id, imgUrl: location})
@@ -210,16 +208,20 @@ class UserController {
 
     static async checkDisease(req, res, next) {
         try {
-            const {id: UserId} = req.user
-            const {id} = req.body
+            const { id: UserId } = req.user
+            const { id } = req.body
             uploadSingle(req, res, (error) => {
                 if(error) return res.status(400).json({ message: `Only images are allowed!` })
-
                 predict(req.file.path)
                 .then((prediction) => {
-                    const {confidence, disease} = prediction
-                    MyPlant.update({confidence, disease}, {where: {UserId, id}})
-                    res.json(prediction)
+                    const { confidence, disease } = prediction
+                    MyPlant.update({ confidence, disease }, { where: { UserId, id } })
+                    .then(() => {
+                        res.json(prediction)
+                    })
+                    .catch((error) => {
+                        throw error
+                    })
                 })
                 .catch((error) => {
                     throw error

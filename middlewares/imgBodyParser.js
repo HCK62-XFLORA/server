@@ -13,19 +13,6 @@ const s3 = new S3({
     secretAccessKey: process.env.S3_SECRET_KEY
 })
 
-const allowedFileExt = (file, callback) => {
-
-    const fileExts = [`.png`, `.jpg`, `.jpeg`];
-
-    const isAllowedExt = fileExts.includes(
-        path.extname(file.originalname.toLowerCase())
-    );
-
-    const isAllowedMimeType = file.mimetype.startsWith("image/");
-    if(isAllowedExt && isAllowedMimeType) return callback(null, true)
-    return callback({ message: `This file type is not allowed!` })
-}
-
 const upload = multer({ 
     storage: multers3({
         s3,
@@ -38,13 +25,21 @@ const upload = multer({
         },
         contentType: multers3.AUTO_CONTENT_TYPE
     }), 
-    fileFilter: (req, file, callback) => { 
-        allowedFileExt(file, callback) 
-    }, 
+    fileFilter: (req, file, callback) => {
+
+        const fileExts = [`.png`, `.jpg`, `.jpeg`];
+
+        const isAllowedExt = fileExts.includes(
+            path.extname(file.originalname.toLowerCase())
+        );
+
+        const isAllowedMimeType = file.mimetype.startsWith("image/");
+        if(isAllowedExt && isAllowedMimeType) return callback(null, true)
+        return callback({ name: `InvalidFileExt`, message: `This file type is not allowed!` })
+    },
     limits: 2 * 1024 * 1024 
 })
 
 module.exports = {
-    upload,
-    allowedFileExt
+    upload
 }

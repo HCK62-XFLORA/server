@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>18/18</span>
+                <span class='fraction'>14/14</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>18/18</span>
+                <span class='fraction'>14/14</span>
             </div>
         
             
@@ -86,66 +86,51 @@
 <a name='L21'></a><a href='#L21'>21</a>
 <a name='L22'></a><a href='#L22'>22</a>
 <a name='L23'></a><a href='#L23'>23</a>
-<a name='L24'></a><a href='#L24'>24</a>
-<a name='L25'></a><a href='#L25'>25</a>
-<a name='L26'></a><a href='#L26'>26</a>
-<a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a>
-<a name='L29'></a><a href='#L29'>29</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L24'></a><a href='#L24'>24</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">const express = require(`express`)
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span></td><td class="text"><pre class="prettyprint lang-js">const express = require(`express`)
 const threadRouter = express.Router()
 const ThreadController = require("../controllers/threadController")
 &nbsp;
 const { upload } = require("../middlewares/imgBodyParser")
 const { authentication } = require("../middlewares/auth")
 &nbsp;
-threadRouter.get(`/`, ThreadController.getThreads)
+threadRouter.use(authentication)
 &nbsp;
-threadRouter.post(`/predict`, ThreadController.checkDisease)
-&nbsp;
-threadRouter.get(`/points`, authentication, ThreadController.getPoints)
-&nbsp;
-threadRouter.get(`/:ThreadId`, ThreadController.getThread)
-&nbsp;
-// threadRouter.use(authentication)
-threadRouter.post(`/`, upload.single(`image`), ThreadController.postThread)
-threadRouter.put(`/:ThreadId`, ThreadController.editThread)
-threadRouter.delete(`/:ThreadId`, ThreadController.deleteThread)
-&nbsp;
+// threadRouter.put(`/:ThreadId`, ThreadController.editThread)
+// threadRouter.delete(`/:ThreadId`, ThreadController.deleteThread)
 threadRouter.get(`/reaction/:ThreadId`, ThreadController.getThreadReactions)
 threadRouter.post(`/reaction/:ThreadId`, ThreadController.reactAThread)
-threadRouter.delete(`/reaction/:ThreadId`, ThreadController.unreactAThread)
+// threadRouter.delete(`/reaction/:ThreadId`, ThreadController.unreactAThread)
 &nbsp;
 threadRouter.get(`/comments/:ThreadId`, ThreadController.getThreadComment)
-threadRouter.post(`/comments/:ThreadId`, ThreadController.comment)
+threadRouter.post(`/comments/:ThreaId`, ThreadController.comment)
 &nbsp;
+threadRouter.get(`/`, ThreadController.getThreads)
+threadRouter.post(`/`, upload.single(`image`), ThreadController.postThread)
+&nbsp;
+threadRouter.get(`/:ThreadId`, ThreadController.getThread)
 &nbsp;
 module.exports = threadRouter</pre></td></tr></table></pre>
 
@@ -154,7 +139,7 @@ module.exports = threadRouter</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2023-10-23T09:45:11.054Z
+                at 2023-10-24T09:38:52.780Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

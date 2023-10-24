@@ -1,6 +1,7 @@
 
 
 function errorHandler(error, req, res, next){
+    console.log(error, `=========================================`)
     let status = error.status || 500
     let message = error.message || "Internal Server Error"
     
@@ -37,6 +38,13 @@ function errorHandler(error, req, res, next){
         case "NotFound" :
             status = 404
             message = "Not Found"
+        break;
+        case "SequelizeDatabaseError" :
+            status = 400
+            message = error.errors[0].message
+        case "InvalidFileExt" :
+            status = 400
+            message = error.message
         break
         case "EmptyImage" :
             status = 400
@@ -47,6 +55,7 @@ function errorHandler(error, req, res, next){
             message = "Field cannot be empty"
     }
 
+    console.log(status, message, `<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`)
     res.status(status).json({message})
 }
 

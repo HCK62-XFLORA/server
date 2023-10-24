@@ -10,10 +10,11 @@
   "test": {
     "username": "postgres",
     "password": "postgres",
-    "database": "final_project_test_db",
+    "database": "final_test",
     "host": "localhost",
     "dialect": "postgres",
-    "port": 5433
+    "port": 5432,
+    "logging": false
   },
   "production": {
     "use_env_variable": "DATABASE_URL"

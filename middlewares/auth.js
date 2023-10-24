@@ -4,10 +4,8 @@ const {User, Thread} = require('../models')
 async function authentication(req, res, next){
     try {
         const {access_token} = req.headers
-        console.log(access_token);
-
         const payload = verifyToken(access_token)
-
+        console.log(payload)
         const user = await User.findByPk(payload.id)
 
         if(!user){
@@ -17,33 +15,32 @@ async function authentication(req, res, next){
         req.user = {id: user.id, username: user.username}
         next()
     } catch (error) {
-        console.log(error);
         next(error)
     }
 }
 
-async function usefulAuthorization(req, res, next){
-    try {
-        const {id, username} = req.user
+// async function usefulAuthorization(req, res, next){
+//     try {
+//         const {id, username} = req.user
 
-        const thread = await Thread.findByPk(req.params.id)
+//         const thread = await Thread.findByPk(req.params.id)
 
-        if(!thread){
-            throw {name: "NotFound"}
-        }
+//         if(!thread){
+//             throw {name: "NotFound"}
+//         }
 
-        if(thread.UserId !== id){
-            throw {name: "Forbidden"}
-        }
+//         if(thread.UserId !== id){
+//             throw {name: "Forbidden"}
+//         }
 
 
-        next()
-    } catch (error) {
-        next(Error)
-    }
-}
+//         next()
+//     } catch (error) {
+//         next(Error)
+//     }
+// }
 
 module.exports = {
     authentication,
-    usefulAuthorization
+    // usefulAuthorization
 }

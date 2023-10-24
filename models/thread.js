@@ -11,10 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Thread.belongsTo(models.User, {foreignKey: "UserId"})
-      Thread.hasMany(models.Comment, {foreignKey: "ThreadId"})
-      Thread.hasMany(models.Reaction, {foreignKey: "ThreadId"})
-      Thread.belongsTo(models.Forum, {foreignKey: "ForumId"})
+      this.belongsTo(models.User, {foreignKey: "UserId"})
+      this.hasMany(models.Comment, {foreignKey: "ThreadId"})
+      this.hasMany(models.Reaction, {foreignKey: "ThreadId"})
+      this.belongsTo(models.Forum, {foreignKey: "ForumId"})
     }
   }
   Thread.init({
