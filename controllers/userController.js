@@ -149,7 +149,7 @@ class UserController {
 
     static async addMyPlant(req, res, next){
         try {
-
+            const {PlantId} = req.body
             if(!PlantId){
                 throw {name: "EmptyField"}
             }
@@ -157,7 +157,7 @@ class UserController {
                 throw {name: "EmptyImage"}
             }
             
-            const {PlantId} = req.body
+            console.log(PlantId,`=============================`)
             const {id} = req.user
             const {location} = req.file
             await MyPlant.create({PlantId, UserId: id, imgUrl: location})
@@ -206,12 +206,14 @@ class UserController {
 
     static async checkDisease(req, res, next) {
         try {
-            const { id } = req.User
+            const { id: UserId } = req.user
+            const { id } = req.body
             uploadSingle(req, res, (error) => {
                 if(error) return res.status(400).json({ message: `Only images are allowed!` })
                 predict(req.file.path)
                 .then((prediction) => {
-                    MyPlant.patch({ prediction }, { where: { UserId: id } })
+                    const { confidence, disease } = prediction
+                    MyPlant.update({ confidence, disease }, { where: { UserId, id } })
                     .then(() => {
                         res.json(prediction)
                     })

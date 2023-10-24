@@ -2,7 +2,7 @@ const { app } = require("../app");
 const request = require("supertest");
 const { User, MyPlant, Plant } = require("../models");
 const { hashPass } = require("../helpers/bcrypt");
-const { generateToken } = require("../helpers/jwt");
+const {generateToken} = require('../helpers/jwt')
 
 const user1 = {
   email: "user.test@mail.com",
@@ -21,12 +21,12 @@ const plants = require(`../data/plants.json`).map((plant) => {
 })
 
 let access_token;
-let fake_access_token = generateToken({ id: 999999999999999999 })
+let fake_access_token = generateToken({id: 99999999})
 
 beforeAll((done) => {
   User.create(user1)
   .then((newUser) => {
-    access_token = generateToken({ id: newUser.id })
+    access_token = generateToken({id: newUser.id})
     return Plant.bulkCreate(plants)
   })
   .then(() => {
@@ -119,7 +119,7 @@ describe("User Routes Test", () => {
         .expect(400)
         .then((response) => {
           expect(response.body).toBeInstanceOf(Object);
-          expect(response.body).toHaveProperty("message");
+          expect(response.body).toHaveProperty("message", "password cannot be empty");
           done();
         })
         .catch((err) => {
@@ -134,7 +134,7 @@ describe("User Routes Test", () => {
         .expect(400)
         .then((response) => {
           expect(response.body).toBeInstanceOf(Object);
-          expect(response.body).toHaveProperty("message");
+          expect(response.body).toHaveProperty("message", "Account already exists");
           done();
         })
         .catch((err) => {
@@ -155,7 +155,7 @@ describe("User Routes Test", () => {
         .expect(400)
         .then((response) => {
           expect(response.body).toBeInstanceOf(Object);
-          expect(response.body).toHaveProperty("message");
+          expect(response.body).toHaveProperty("message", "Invalid email format");
           done();
         })
         .catch((err) => {
@@ -177,7 +177,47 @@ describe("User Routes Test", () => {
       .expect(400)
       .then((response) => {
         expect(response.body).toBeInstanceOf(Object);
-        expect(response.body).toHaveProperty("message");
+        expect(response.body).toHaveProperty("message", "Password must be at least 8 characters");
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("400 Failed register - should return error if username is null", (done) => {
+    request(app)
+      .post("/users/register")
+      .send({
+        email: "user2@mail.com",
+        password: "qweqwe",
+        birthday: new Date(),
+        gender: "Male",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "Username cannot be empty");
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("400 Failed register - should return error if gender is null", (done) => {
+    request(app)
+      .post("/users/register")
+      .send({
+        email: "user2@mail.com",
+        password: "qweqwe",
+        username: "test",
+        birthday: new Date(),
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "Gender cannot be empty");
         done();
       })
       .catch((err) => {
@@ -222,7 +262,221 @@ describe("POST /users/login - user login", () => {
         done(err)
       })
   });
+
+  test("401 Failed login - should return error when empty email", (done) => {
+    request(app)
+      .post("/users/login")
+      .send({
+        password: "salahpassword",
+      })
+      .expect(401)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object)
+        expect(response.body).toHaveProperty("message", "Email cannot be empty");
+        done()
+        })
+      .catch((err) => {
+        done(err)
+      })
+  });
+
+  test("401 Failed login - should return error when empty password", (done) => {
+    request(app)
+      .post("/users/login")
+      .send({
+        email: "test@mail.com",
+      })
+      .expect(401)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object)
+        expect(response.body).toHaveProperty("message", "Password cannot be empty");
+        done()
+        })
+      .catch((err) => {
+        done(err)
+      })
+  });
 });
+
+describe("GET /users/profile/:id - get profile detail", () => {
+  test("200 Success get user - should return user", (done) => {
+    request(app)
+      .get("/users/profile/" + 1)
+      .set("access_token", access_token)
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("username", "email", "gender");
+        expect(response.body).not.toHaveProperty("password")
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("404 Failed get user - should return not found", (done) => {
+    request(app)
+      .get("/users/profile/" + 999999999)
+      .set("access_token", access_token)
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "Not Found");
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("401 Failed get user - should return Invalid token", (done) => {
+    request(app)
+      .get("/users/profile/" + 999999999)
+      .set("access_token", fake_access_token)
+      .expect(401)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "User not found"); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+});
+
+describe("GET /users/my-plant - get users my plant", () => {
+  test("200 Success get user my plant - should return my plant", (done) => {
+    request(app)
+      .get("/users/my-plant")
+      .set("access_token", access_token)
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Array);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("401 Failed get user my plant - should return Invalid token", (done) => {
+    request(app)
+      .get("/users/my-plant")
+      .set("access_token", fake_access_token)
+      .expect(401)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "User not found"); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+})
+
+describe("GET /users/plants - get all plants data", () => {
+  test("200 Success get plants data - should return plants", (done) => {
+    request(app)
+      .get("/users/plants")
+      .set("access_token", access_token)
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Array);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("401 Failed get plants data - should return Invalid token", (done) => {
+    request(app)
+      .get("/users/plants")
+      .set("access_token", fake_access_token)
+      .expect(401)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "User not found"); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+})
+
+describe("POST /users/my-plant - create new my plant", () => {
+  test("201 Success create my plant - should return Your plant added successfully", (done) => {
+    request(app)
+      .post("/users/my-plant")
+      .set("access_token", access_token)
+      .field("PlantId", 1)
+      .attach("image", './data/Lidah_mertua.jpg')
+      .expect(201)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "Your plant added successfully")
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("401 Failed create plants data - should return Invalid token", (done) => {
+    request(app)
+      .post("/users/my-plant")
+      .set("access_token", fake_access_token)
+      .attach("image", './data/Lidah_mertua.jpg')
+      .field("PlantId", 1)
+      .expect(401)
+      .then((response) => {
+
+        console.log(response);
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "User not found"); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("400 Failed create plants data - should return Image cannot be empty", (done) => {
+    request(app)
+      .post("/users/my-plant")
+      .set("access_token", access_token)
+      .expect(400)
+      .field("PlantId", 1)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "Image cannot be empty");
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("400 Failed create plants data - should return Field cannot be empty", (done) => {
+    request(app)
+      .post("/users/my-plant")
+      .set("access_token", access_token)
+      .expect(400)
+      .attach("image", './data/Lidah_mertua.jpg')
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "Field cannot be empty");
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+})
 
 describe(`POST /users/predict`, () => {
   
@@ -241,16 +495,16 @@ describe(`POST /users/predict`, () => {
     }
   })
 
-  test(`Failed get a plant's disease's prediction`, async () => {
+  test(`Failed get a plant's disease's prediction because of invalid file extension`, async () => {
     try {
       const response = await request(app)
       .post(`/users/predict`)
       .set(`access_token`, access_token)
       .attach(`image`, `./data/plants.json`)
-      .expect(200)
+      .expect(400)
         console.log(response.body)
         expect(response.body).toBeInstanceOf(Object)
-        expect(response.body).toHaveProperty(`confidence`)
+        expect(response.body).toHaveProperty(`message`)
     } catch (error) {
       console.log(error)
     }
