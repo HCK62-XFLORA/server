@@ -1,76 +1,227 @@
-const { createServer } = require("http");
-const { Server } = require("socket.io");
-const configureSocket = require("../config_socket/socket");
+const request = require(`supertest`)
 
-describe("Socket.io Server Testing", () => {
-  let io;
-  let server;
-  let socketClient;
+const { sequelize, Thread, User, Forum, Comment } = require(`../models`)
 
-  beforeAll(() => {
-    server = createServer();
-    io = configureSocket(new Server(server));
-    server.listen(3000); // Port sesuaikan dengan konfigurasi Anda
+const { queryInterface } = sequelize
+
+const { app } = require(`../app`)
+const { hashPass } = require("../helpers/bcrypt")
+const { generateToken } = require("../helpers/jwt")
+
+const users = [
+    {
+        username: `gaw`,
+        email: `gaw@mail.com`,
+        password: hashPass(`gawgaw`),
+        birthday: `10/15/2001`,
+        gender: `Male`,
+        badge: `Beginner`,
+        point: 0
+    },
+    {
+        username: `leg`,
+        email: `leg@mail.com`,
+        password: hashPass(`legleg`),
+        birthday: `10/15/2001`,
+        gender: `Male`,
+        badge: `Beginner`,
+        point: 0
+    }
+]
+
+let tokenUser0;
+const invalidTokenUser0 = generateToken({ id: 999999999999999 })
+
+let tokenUser1;
+let invalidTokenUser1 = generateToken({ id: 999999999999998 })
+
+
+const io = require("socket.io-client");
+const { io: server } = require("../app");
+beforeAll((done) => {
+    User.create(users[0])
+    .then((newUser) => {
+        tokenUser0 = generateToken({ id: newUser.id })
+        return User.create(users[1])
+    })
+    .then((newUser1) => {
+
+        tokenUser1 = generateToken({ id: newUser1.id })
+        return Forum.bulkCreate([
+            {
+                name: `Forum-1`,
+                imgUrl: `https://google.com`
+            },
+            {
+                name: `Forum-2`,
+                imgUrl: `https://google.com`
+            },
+            {
+                name: `Forum-3`,
+                imgUrl: `https://google.com`
+            }
+        ])
+    })
+    .then((newForum) => {
+        return Thread.bulkCreate([
+            {
+                UserId: 1,
+                imgUrl: `https://google.com`,
+                content: `Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sapiente optio eaque veniam sint nam quia maiores? Iste recusandae fugiat laboriosam nobis accusantium repellat tenetur sapiente odio id, veniam voluptatem consequuntur aperiam impedit. Harum reprehenderit laborum voluptatem dicta, nam voluptatibus, cum sed, excepturi expedita neque qui. Architecto, sapiente dolorum. Quod, vitae.`,
+                ForumId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                UserId: 1,
+                imgUrl: `https://google.com`,
+                content: `Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sapiente optio eaque veniam sint nam quia maiores? Iste recusandae fugiat laboriosam nobis accusantium repellat tenetur sapiente odio id, veniam voluptatem consequuntur aperiam impedit. Harum reprehenderit laborum voluptatem dicta, nam voluptatibus, cum sed, excepturi expedita neque qui. Architecto, sapiente dolorum. Quod, vitae.`,
+                ForumId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                UserId: 1,
+                imgUrl: `https://google.com`,
+                content: `Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sapiente optio eaque veniam sint nam quia maiores? Iste recusandae fugiat laboriosam nobis accusantium repellat tenetur sapiente odio id, veniam voluptatem consequuntur aperiam impedit. Harum reprehenderit laborum voluptatem dicta, nam voluptatibus, cum sed, excepturi expedita neque qui. Architecto, sapiente dolorum. Quod, vitae.`,
+                ForumId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                UserId: 1,
+                imgUrl: `https://google.com`,
+                content: `Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sapiente optio eaque veniam sint nam quia maiores? Iste recusandae fugiat laboriosam nobis accusantium repellat tenetur sapiente odio id, veniam voluptatem consequuntur aperiam impedit. Harum reprehenderit laborum voluptatem dicta, nam voluptatibus, cum sed, excepturi expedita neque qui. Architecto, sapiente dolorum. Quod, vitae.`,
+                ForumId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                UserId: 1,
+                imgUrl: `https://google.com`,
+                content: `Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sapiente optio eaque veniam sint nam quia maiores? Iste recusandae fugiat laboriosam nobis accusantium repellat tenetur sapiente odio id, veniam voluptatem consequuntur aperiam impedit. Harum reprehenderit laborum voluptatem dicta, nam voluptatibus, cum sed, excepturi expedita neque qui. Architecto, sapiente dolorum. Quod, vitae.`,
+                ForumId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            }
+        ])
+    })
+    .then(() => {
+        return Comment.bulkCreate([
+            {
+                UserId: 1,
+                ThreadId: 1,
+                comment: `Architecto, sapiente dolorum. Quod, vitae.`
+            },
+            {
+                UserId: 1,
+                ThreadId: 1,
+                comment: `Architecto, sapiente dolorum. Quod, vitae.`
+            },
+            {
+                UserId: 1,
+                ThreadId: 1,
+                comment: `Architecto, sapiente dolorum. Quod, vitae.`
+            },
+            {
+                UserId: 1,
+                ThreadId: 1,
+                comment: `Architecto, sapiente dolorum. Quod, vitae.`
+            },
+            {
+                UserId: 1,
+                ThreadId: 1,
+                comment: `Architecto, sapiente dolorum. Quod, vitae.`
+            },
+            {
+                UserId: 1,
+                ThreadId: 1,
+                comment: `Architecto, sapiente dolorum. Quod, vitae.`
+            }
+        ])
+    })
+    .then((_) => {
+        done()
+    })
+    .catch((error) => {
+        console.log(error)
+        done(error)
+    })
+})
+
+afterAll((done) => {
+  Thread.destroy({ truncate: true, cascade: true, restartIdentity: true })
+  .then(() => {
+      return Forum.destroy({ truncate: true, cascade: true, restartIdentity: true })
+  })
+  .then(() => {
+      return User.destroy({ truncate: true, cascade: true, restartIdentity: true })
+  })
+  .then(() => {
+      done()
+  })
+  .catch((error) => {
+      console.log(error)
+  })
+})
+
+describe("Suite of unit tests", function() {
+  server.attach(3010);
+  let socket;
+  
+
+  beforeEach(function(done) {
+    // Setup
+    socket = io("http://localhost:3010");
+
+    socket.on("connect", function() {
+      console.log("worked...");
+      socket.emit("joinRoom", { ThreadId: 1 })
+      done();
+    });
+    socket.on("disconnect", function() {
+      console.log("disconnected...");
+    });
   });
 
-  afterAll(() => {
-    io.close();
-    server.close();
-  });
-
-  beforeEach((done) => {
-    // Mengkoneksikan client socket.io ke server
-    socketClient = require("socket.io-client")("http://localhost:3000");
-    socketClient.on("connect", done);
-  });
-
-  afterEach((done) => {
-    // Memutus koneksi setelah setiap uji
-    if (socketClient.connected) {
-      socketClient.disconnect();
+  afterEach(function(done) {
+    // Cleanup
+    if (socket.connected) {
+      console.log("disconnecting...");
+      socket.disconnect();
+    } else {
+      // There will not be a connection unless you have done() in beforeEach, socket.on('connect'...)
+      console.log("no connection to break...");
     }
     done();
   });
 
-  it("should join and leave room", (done) => {
-    const roomId = "testRoom";
-    socketClient.emit("joinRoom", { ThreadId: roomId });
-
-    // Menunggu server mengirimkan pesan konfirmasi
-    socketClient.on("serverMessage", (message) => {
-      expect(message).toBe(`Joined room: ${roomId}`);
-
-      // Memutus koneksi dari ruangan
-      socketClient.emit("leaveRoom", { ThreadId: roomId });
-
-      // Menunggu server mengirimkan pesan konfirmasi
-      socketClient.on("serverMessage", (leaveMessage) => {
-        expect(leaveMessage).toBe(`Left room: ${roomId}`);
-        done();
-      });
-    });
+  afterAll(function(done) {
+    socket.disconnect();
+    server.close();
+    done();
   });
 
-  it("should send and receive client messages", (done) => {
-    const roomId = "testRoom";
-    const message = "Hello, Server!";
-    socketClient.emit("joinRoom", { ThreadId: roomId });
+  describe("Chat tests", function() {
+    test("should work", (done) => {
+      //join emit room
 
-    // Menunggu server mengirimkan pesan konfirmasi
-    socketClient.on("serverMessage", (joinMessage) => {
-      expect(joinMessage).toBe(`Joined room: ${roomId}`);
-
-      // Mengirim pesan dari client
-      socketClient.emit("clientMessage", {
-        ThreadId: roomId,
-        comment: message,
+      socket.emit("clientMessage", {
+        ThreadId: 1,
+        comment: "Hello world",
         UserId: 1,
       });
 
-      // Menunggu server mengirimkan pesan balasan
-      socketClient.on("serverMessage", (serverMessage) => {
-        expect(serverMessage).toBe(`Received message: ${message}`);
-        done();
+
+      socket.on("serverMessage", (payload) => {
+        try {
+          expect(payload).toHaveProperty("ThreadId");
+          expect(payload).toHaveProperty("comment");
+          expect(payload).toHaveProperty("UserId");
+          done();
+        } catch (err) {
+          done(err);
+        }
       });
     });
   });
