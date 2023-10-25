@@ -81,7 +81,7 @@ class UserController {
             const user = await User.findByPk(id, {include: [{
                 model: MyPlant,
                 include: [Plant]
-            }, 'Threads', 'MyRewards'], where: {UserId: id}, attributes : { exclude: ['password']}})
+            }, 'Threads', {model: MyReward, include: [Reward]}], where: {UserId: id}, attributes : { exclude: ['password']}})
 
             if(!user){
                 throw {name: "NotFound"}
@@ -279,6 +279,18 @@ class UserController {
         }
     }
 
+    static async getMyReward(req, res, next){
+        try {
+            const {id} = req.user
+
+            const myReward = await MyReward.findAll({where: {UserId: id}})
+
+            res.status(200).json(myReward)
+        } catch (error) {
+            next(error)
+        }
+    }
+
     static async claimReward(req, res, next){
         try {
             const {rewardId} = req.params
@@ -286,10 +298,10 @@ class UserController {
 
             const user = await User.findByPk(id)
             const reward = await Reward.findByPk(rewardId)
-
+            console.log(user, reward)
             if(user.point >= reward.point){
-                point = user.point - reward.point
-                await User.update(point, {where: {id: id}})
+                let point = user.point - reward.point
+                await User.update({point}, {where: {id: id}})
                 await MyReward.create({UserId: id, RewardId: rewardId})
             } else {
                 throw {name: "Insufficient"}
