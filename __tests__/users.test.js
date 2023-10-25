@@ -1,6 +1,6 @@
 const { app } = require("../app");
 const request = require("supertest");
-const { User, MyPlant, Plant } = require("../models");
+const { User, MyPlant, Plant, Reward, MyReward } = require("../models");
 const { hashPass } = require("../helpers/bcrypt");
 const {generateToken} = require('../helpers/jwt')
 
@@ -10,7 +10,10 @@ const user1 = {
   password: hashPass(`testestes`),
   birthday: new Date(),
   gender: "Male",
+  point: 200
 };
+
+let id;
 
 const plants = require(`../data/plants.json`).map((plant) => {
 
@@ -26,6 +29,7 @@ let fake_access_token = generateToken({id: 99999999})
 beforeAll((done) => {
   User.create(user1)
   .then((newUser) => {
+    id = newUser.id
     access_token = generateToken({id: newUser.id})
     return Plant.bulkCreate(plants)
   })
@@ -34,14 +38,45 @@ beforeAll((done) => {
       {
         UserId: 1,
         PlantId: 1,
-        imgUrl: `http://google.com`
+        imgUrl: `http://google.com`,
       },
       {
         UserId: 1,
         PlantId: 2,
-        imgUrl: `http://google.com`
+        imgUrl: `http://google.com`,
       }
     ])
+  })
+  .then(() => {
+    return Reward.bulkCreate([
+      {
+      image: 'https://www.bca.co.id/-/media/Feature/Promo/Thumbnail/2021/04/01/20200810-starbucks-banner.jpg',
+      title: 'Reward 1',
+      description: `🎉 Congratulations on Winning a Coffee Voucher! 🎉 /n We're thrilled to reward your outstanding achievement with a delightful coffee voucher that promises to awaken your senses and brighten your day. Your victory is a testament to your dedication and excellence, and we couldn't be happier to recognize your efforts.`,
+      point: 100,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      image: 'https://www.bca.co.id/-/media/Feature/Promo/Page/2021/08/20210806-McDelivery_WebInsertion_Banner.jpg',
+      title: 'Reward 2',
+      description: `🍽️ Congratulations on Winning a Food Voucher! 🍽️ /n Your dedication and success deserve to be celebrated, and what better way to do so than with a delectable dining experience on us? We are delighted to present you with a mouthwatering Food Voucher as a token of our appreciation for your achievements.`,
+      point: 200,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      image: 'https://www.bca.co.id/-/media/Feature/Promo/Page/2023/10/20231020-erajaya-banner.jpg?v=1',
+      title: 'Reward 3',
+      description: `📱 Congratulations on Winning an iPhone! 📱 /n Your dedication and extraordinary achievement have paid off, and we are thrilled to present you with the ultimate prize – a brand new iPhone! This cutting-edge device is a symbol of your outstanding success, and we're delighted to be a part of your celebration.`,
+      point: 1000,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+    ])
+  })
+  .then(_ => {
+    return MyPlant.create({ UserId: id, PlantId: 1, imgUrl: `http://google.com` })
   })
   .then(() => {
     done()
@@ -64,6 +99,20 @@ afterAll((done) => {
         cascade: true,
         restartIdentity: true,
       });
+    })
+    .then((_) => {
+      return Reward.destroy({
+        truncate: true,
+        cascade: true,
+        restartIdentity: true
+      })
+    })
+    .then((_) => {
+      return MyReward.destroy({
+        truncate: true,
+        cascade: true,
+        restartIdentity: true
+      })
     })
     .then((_) => {
       done();
@@ -510,3 +559,226 @@ describe(`POST /users/predict`, () => {
     }
   })
 })
+
+describe("GET /users/my-plant/:id - get data my plant by id", () => {
+  test("200 Success get my plant - should return my plant by id", (done) => {
+    request(app)
+      .get("/users/my-plant" + 1)
+      .set("access_token", access_token)
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("401 Failed get my plant - should return user not found", (done) => {
+    request(app)
+      .get("/users/my-plant" + 1)
+      .set("access_token", fake_access_token)
+      .expect(401)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "User not found");
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("404 Failed get my plant - should return not found", (done) => {
+    request(app)
+      .post("/users/my-plant" + 9999999)
+      .set("access_token", access_token)
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "Not Found");
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+});
+
+describe("GET /users/reward/ - get data all reward", () => {
+  test("200 Success get reward - should return all reward", (done) => {
+    request(app)
+      .get("/users/reward")
+      .set("access_token", access_token)
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Array);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("401 Failed get reward - should return user not found", (done) => {
+    request(app)
+      .get("/users/reward")
+      .set("access_token", fake_access_token)
+      .expect(401)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "User not found");
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+});
+
+describe("GET /users/reward/:id - get data reward by id", () => {
+  test("200 Success get reward - should return reward by id", (done) => {
+    request(app)
+      .get("/users/reward" + 1)
+      .set("access_token", access_token)
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("401 Failed get reward - should return user not found", (done) => {
+    request(app)
+      .get("/users/reward" + 1)
+      .set("access_token", fake_access_token)
+      .expect(401)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "User not found");
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("404 Failed get reward - should return not found", (done) => {
+    request(app)
+      .get("/users/reward" + 9999999)
+      .set("access_token", access_token)
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "Not Found");
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+});
+
+describe.only("GET /users/my-reward - get data my reward", () => {
+  test("200 Success get my reward - should return my reward", (done) => {
+    request(app)
+      .get("/users/my-reward/")
+      .set("access_token", access_token)
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Array);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("401 Failed get my reward - should return user not found", (done) => {
+    request(app)
+      .get("/users/my-reward")
+      .set("access_token", fake_access_token)
+      .expect(401)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "User not found");
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+});
+
+
+describe("PATCH /users/claim-reward/:rewardId - claim reward, deduct point and add voucher to user profile", () => {
+  test("200 Success claim reward - should return success", (done) => {
+    User.update({ point: 200 }, { where: { id } })
+    .then(_ => {
+      request(app)
+        .patch("/users/claim-reward/" + 1)
+        .set("access_token", access_token)
+        .expect(200)
+        .then((response) => {
+          expect(response.body).toBeInstanceOf(Object);
+          expect(response.body).toHaveProperty("message", "Success")
+          done();
+        })
+        .catch((err) => {
+          done(err);
+        });
+    }) 
+  });
+
+  test("400 Failed claim reward - should return user not found", (done) => {
+    User.update({ point: 200 }, { where: { id } })
+    .then(_ => {
+      request(app)
+        .patch("/users/claim-reward" + 1)
+        .set("access_token", fake_access_token)
+        .expect(401)
+        .then((response) => {
+          expect(response.body).toBeInstanceOf(Object);
+          expect(response.body).toHaveProperty("message", "User not found");
+          done();
+        })
+        .catch((err) => {
+          done(err);
+        });
+    })
+  });
+
+  test("404 Failed claim reward - should return not found", (done) => {
+    request(app)
+      .patch("/users/claim-reward/" + 99999)
+      .set("access_token", access_token)
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "Not Found");
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  test("400 Failed claim reward - should return insufficient point", (done) => {
+    request(app)
+      .patch("/users/claim-reward/" + 3)
+      .set("access_token", access_token)
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("message", "Insufficent point");
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+});

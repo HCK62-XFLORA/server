@@ -10,7 +10,7 @@ module.exports = class CommentController {
 
         return newComment
       } catch (error) {
-        console.log(error, "<<<");
+        throw error
       }
     }
 }

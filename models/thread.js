@@ -46,8 +46,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
-        notNull: true,
-        notEmpty: true
+        notNull: { msg: "Forum cannot be empty" },
+        notEmpty: { msg: "Forum cannot be empty" }
+
       }
     },
     title: {
