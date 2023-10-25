@@ -19,7 +19,7 @@ threadRouter.post(`/comments/:ThreadId`, ThreadController.comment)
 threadRouter.get(`/`, ThreadController.getThreads)
 threadRouter.post(`/`, upload.single(`image`), ThreadController.postThread)
 
-threadRouter.post(`/ask`, ThreadController.askProblem)
+// threadRouter.post(`/ask`, ThreadController.askProblem)
 
 threadRouter.get(`/:ThreadId`, ThreadController.getThread)
 

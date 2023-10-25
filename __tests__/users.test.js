@@ -226,7 +226,7 @@ describe("User Routes Test", () => {
   });
 });
 
-describe.only("POST /users/login - user login", () => {
+describe("POST /users/login - user login", () => {
   test("200 Success login - should return access_token", (done) => {
     request(app)
       .post("/users/login")
