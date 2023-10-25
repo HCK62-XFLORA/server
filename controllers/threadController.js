@@ -14,9 +14,25 @@ class ThreadController {
         try {
             const { ThreadId } = req.params
 
-            const thread = await Thread.findByPk(ThreadId, { include: [{ model: Comment, include: [{ model: User, attributes: [`username`] }]}, { model: Reaction }] })
+            const thread = await Thread.findByPk(ThreadId, { include: [{ model: Comment, include: [{ model: User, attributes: [`username`] }]}, { model: Reaction }, {model: User, attributes: ["username"]}] })
             if(!thread) return res.status(404).json({ message: `Thread not found!` })
 
+            let likes = []
+            let dislikes = []
+
+            thread.Reactions.forEach((reaction) => {
+                if(reaction.reaction == true){
+                    likes.push(reaction)
+                } else {
+                    dislikes.push(reaction)
+                }
+            })
+
+            thread.reaction = {
+                likes: likes.length,
+                dislikes: dislikes.length
+            }
+            
             res.json(thread)
         } catch (error) {
             next(error)
@@ -92,9 +108,19 @@ class ThreadController {
 
             const threadReactions = await Reaction.findAll({ where: { ThreadId } })
             if(!threadReactions) return res.status(404).json({ message: `Thread not found` })
-            const likes = threadReactions.filter((reaction) => threadReactions.reaction == true).length
-            const dislikes = threadReactions.filter((reaction) => threadReactions.reaction == false).length
-            res.json({ likes, dislikes })
+            let likes = []
+            let dislikes = []
+            const reactions = {}
+            if(threadReactions.length != 0) {
+                threadReactions.forEach((reaction) => {
+                    if(reaction.reaction != false) {
+                        likes.push(reaction)
+                    } else {
+                        dislikes.push(reaction)
+                    }
+                })
+            }
+            res.json({ likes: likes.length, dislikes: dislikes.length })
         } catch (error) {
             next(error)
         }
@@ -147,7 +173,8 @@ class ThreadController {
             const { ThreadId } = req.params
 
             const newComment = await Comment.create({ UserId: id, ThreadId, comment })
-            res.status(201).json(newComment)
+            const data = await Comment.findOne({where: {id: newComment.id}, include: [{model: User, attributes: ['username']}]})
+            res.status(201).json(data)
         } catch (error) {
             next(error)
         }

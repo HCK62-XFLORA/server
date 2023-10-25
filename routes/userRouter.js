@@ -24,6 +24,7 @@ userRouter.post(`/predict/:id`, UserController.checkDisease)
 
 userRouter.get('/reward', UserController.getReward)
 userRouter.get('/reward/:id', UserController.rewardById)
+userRouter.get('/my-reward', UserController.getMyReward)
 userRouter.patch('/claim-reward/:rewardId', UserController.claimReward)
 
 
