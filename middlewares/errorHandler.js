@@ -52,6 +52,11 @@ function errorHandler(error, req, res, next){
         case "EmptyField" :
             status = 400
             message = "Field cannot be empty"
+        break
+        case "Insufficient" :
+            status = 400
+            message = "Insufficent point"
+        break
     }
 
     console.log(status, message, `<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`)

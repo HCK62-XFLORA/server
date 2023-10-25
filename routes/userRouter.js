@@ -15,14 +15,15 @@ userRouter.get('/profile/:id', UserController.getUser)
 // userRouter.put('/profile/:id', UserController.updateProfile)
 userRouter.get('/my-plant', UserController.getMyPlant)
 userRouter.get('/plants', UserController.getPlants)
-userRouter.get('/plants/:id', UserController.getSinglePlant)
 userRouter.post('/my-plant', upload.single('image'), UserController.addMyPlant)
 // userRouter.put('/my-plant/:id', UserController.updateMyPlant)
+userRouter.get('/my-plant/:id', UserController.getSingleMyPlant)
 userRouter.delete('/my-plant/:id', UserController.removePlant)
 
 userRouter.post(`/predict/:id`, UserController.checkDisease)
 
 userRouter.get('/reward', UserController.getReward)
+userRouter.get('/reward/:id', UserController.rewardById)
 userRouter.patch('/claim-reward/:rewardId', UserController.claimReward)
 
 
