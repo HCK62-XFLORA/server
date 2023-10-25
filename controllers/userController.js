@@ -45,38 +45,28 @@ class UserController {
     static async getUser(req, res, next){
         try {
             const {id} = req.params
+            const data = await User.findByPk(id)
+
+            if(!data){
+                throw {name: "NotFound"}
+            }
+
+            if(data.point >= 1000){
+                await User.update({badge: "Expert"})
+            } else if (data.point >= 500){
+                await User.update({badge: "Intermediate"})
+            }
+
             const user = await User.findByPk(id, {include: [{
                 model: MyPlant,
                 include: [Plant]
             }, 'Threads', {model: MyReward, include: [Reward]}], where: {UserId: id}, attributes : { exclude: ['password']}})
-
-            if(!user){
-                throw {name: "NotFound"}
-            }
 
             res.status(200).json(user)
         } catch (error) {
             next(error)
         }
     }
-
-    // static async updateProfile(req, res, next){
-    //     try {
-    //         const {email, password, username, birthday, gender} = req.body
-    //         const {id} = req.params
-    //         const user = await User.findByPk(id)
-
-    //         if(!user){
-    //             throw {name: "NotFound"}
-    //         }
-
-    //         await User.update({email, password, username, birthday, gender}, {where: {id: id}})
-
-    //         res.status(200).json({message: "Update user profile success"})
-    //     } catch (error) {
-    //         next(error)
-    //     }
-    // }
 
     static async getMyPlant(req, res, next){
         try {
@@ -108,8 +98,6 @@ class UserController {
             if(!req.file){
                 throw {name: "EmptyImage"}
             }
-            
-            console.log(PlantId,`=============================`)
             const {id} = req.user
             const {location} = req.file
             await MyPlant.create({PlantId, UserId: id, imgUrl: location})
@@ -135,76 +123,31 @@ class UserController {
             next(error)
         }
     }
-        
-    static async removePlant(req, res, next){
-    try {
-        const {id} = req.params
 
-        const myPlant = await MyPlant.findByPk(id)
-
-        if(!myPlant){
-            throw {name: "NotFound"}
-        }
-
-        await MyPlant.destroy({where: {id: id}})
-
-        res.status(200).json({message: "Your plant deleted successfully"})
-    } catch (error) {
-        next(error)
-    }
-}
-
-static async checkDisease(req, res, next) {
-    try {
-        const { id: UserId } = req.user
-        const { id } = req.params
-        uploadSingle(req, res, (error) => {
-            if(error) return res.status(400).json({ message: `Only images are allowed!` })
-            predict(req.file.path)
-            .then((prediction) => {
-                const { confidence, disease } = prediction
-                MyPlant.update({ confidence, disease }, { where: { UserId, id } })
-                .then(() => {
-                    console.log(prediction)
-                    res.json(prediction)
+    static async checkDisease(req, res, next) {
+        try {
+            const { id: UserId } = req.user
+            const { id } = req.params
+            uploadSingle(req, res, (error) => {
+                if(error) return res.status(400).json({ message: `Only images are allowed!` })
+                predict(req.file.path)
+                .then((prediction) => {
+                    const { confidence, disease } = prediction
+                    MyPlant.update({ confidence, disease }, { where: { UserId, id } })
+                    .then(() => {
+                        console.log(prediction)
+                        res.json(prediction)
+                    })
+                    .catch((error) => {
+                        throw error
+                    })
                 })
                 .catch((error) => {
                     throw error
                 })
             })
-            .catch((error) => {
-                throw error
-            })
-        })
-    } catch (error) {
-        next(error)  
-    }
-}
-
-    static async getPoints(req, res, next) {
-        try {
-            // const { id } = req.user
-
-            const threads = await Thread.findAll({ include: [`Comments`, `Reactions`], where: { UserId: 2 } })
-            // console.log(threads)
-            let likes = []
-            let dislikes = []
-
-            threads.forEach((thread) => {
-                if(thread.Reactions.length !=0){
-                    thread.Reactions.forEach((reaction) => {
-                        if(reaction.reaction == true){
-                            likes.push(reaction)
-                        } else {
-                            dislikes.push(reaction)
-                        }
-                    })
-                }
-            })
-
-            res.json({ likes, dislikes })
         } catch (error) {
-            next(error)
+            next(error)  
         }
     }
 

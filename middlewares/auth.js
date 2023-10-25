@@ -1,5 +1,5 @@
 const { verifyToken } = require("../helpers/jwt")
-const {User, Thread} = require('../models')
+const { User } = require('../models')
 
 async function authentication(req, res, next){
     try {
@@ -18,28 +18,6 @@ async function authentication(req, res, next){
     }
 }
 
-// async function usefulAuthorization(req, res, next){
-//     try {
-//         const {id, username} = req.user
-
-//         const thread = await Thread.findByPk(req.params.id)
-
-//         if(!thread){
-//             throw {name: "NotFound"}
-//         }
-
-//         if(thread.UserId !== id){
-//             throw {name: "Forbidden"}
-//         }
-
-
-//         next()
-//     } catch (error) {
-//         next(Error)
-//     }
-// }
-
 module.exports = {
-    authentication,
-    // usefulAuthorization
+    authentication
 }

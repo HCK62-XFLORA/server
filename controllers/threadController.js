@@ -70,24 +70,18 @@ class ThreadController {
             const newThread = await Thread.create({ UserId: id, content, ForumId, imgUrl: location, title })
             res.status(201).json(newThread)
         } catch (error) {
-            if(error.name === `SequelizeValidationError`) {
-                res.status(400).json({ message: error.errors[0].message })
-            } else {
-                next(error) 
-            }
+            next(error) 
         }
     }
 
     static async getThreadReactions(req, res, next) {
         try {
-            const { id } = req.user
             const { ThreadId } = req.params
 
             const threadReactions = await Reaction.findAll({ where: { ThreadId } })
             if(!threadReactions) return res.status(404).json({ message: `Thread not found` })
             let likes = []
             let dislikes = []
-            const reactions = {}
             if(threadReactions.length != 0) {
                 threadReactions.forEach((reaction) => {
                     if(reaction.reaction != false) {
@@ -114,30 +108,6 @@ class ThreadController {
 
             const newReaction = await Reaction.create({ UserId: id, ThreadId, reaction})
             res.status(201).json(newReaction)
-        } catch (error) {
-            next(error)
-        }
-    }
-
-    // static async unreactAThread(req, res, next) {
-    //     try {
-    //         const { id } = req.user
-    //         const { ThreadId } = req.params
-
-    //         const unreact = await Reaction.destroy({ where: { UserId: id, ThreadId } })
-    //         res.json(unreact)
-    //     } catch (error) {
-    //         next(error)
-    //     }
-    // }
-
-    static async getThreadComment(req, res, next) {
-        try {
-            const { ThreadId } = req.params
-
-            const threadComments = await Comment.findAll({ where: { ThreadId } })
-            if(!threadComments) return res.status(404).json({ message: `There is no such a thread with id ${ThreadId}` })
-            res.json(threadComments)
         } catch (error) {
             next(error)
         }
