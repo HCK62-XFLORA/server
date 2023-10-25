@@ -683,7 +683,7 @@ describe("GET /users/reward/:id - get data reward by id", () => {
   });
 });
 
-describe.only("GET /users/my-reward - get data my reward", () => {
+describe("GET /users/my-reward - get data my reward", () => {
   test("200 Success get my reward - should return my reward", (done) => {
     request(app)
       .get("/users/my-reward/")

@@ -7,7 +7,7 @@ const { upload } = require(`../middlewares/imgBodyParser`)
 const OpenAI = require("openai");
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_KEY, // defaults to process.env["OPENAI_API_KEY"]
+  apiKey: process.env.OPENAI_KEY,
 });
 
 class ThreadController {
@@ -103,8 +103,18 @@ class ThreadController {
             const { ThreadId } = req.params
             const { reaction } = req.body
 
+            const thread = await Thread.findByPk(ThreadId)
+            const threadAuthor = await User.findByPk(thread.UserId)
             const checkUserReaction = await Reaction.findAll({ where: { UserId: id, ThreadId } })
             if(checkUserReaction.length !== 0) return res.status(404).json({ message: `You're already reacted to this thread!` })
+
+            let newPoints = threadAuthor.point
+            if(reaction) {
+                newPoints += 1
+            } else {
+                newPoints -= 1
+            }
+            threadAuthor.update({ point: newPoints })
 
             const newReaction = await Reaction.create({ UserId: id, ThreadId, reaction})
             res.status(201).json(newReaction)

@@ -135,7 +135,6 @@ class UserController {
                     const { confidence, disease } = prediction
                     MyPlant.update({ confidence, disease }, { where: { UserId, id } })
                     .then(() => {
-                        console.log(prediction)
                         res.json(prediction)
                     })
                     .catch((error) => {
