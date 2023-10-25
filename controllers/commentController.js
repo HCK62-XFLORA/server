@@ -7,7 +7,6 @@ module.exports = class CommentController {
         
         const newComment = await Comment.create({ThreadId, comment, UserId })
         
-
         return newComment
       } catch (error) {
         throw error

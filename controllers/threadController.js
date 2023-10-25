@@ -70,7 +70,7 @@ class ThreadController {
             const newThread = await Thread.create({ UserId: id, content, ForumId, imgUrl: location, title })
             res.status(201).json(newThread)
         } catch (error) {
-                next(error)
+            next(error) 
         }
     }
 

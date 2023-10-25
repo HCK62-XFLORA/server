@@ -45,14 +45,22 @@ class UserController {
     static async getUser(req, res, next){
         try {
             const {id} = req.params
+            const data = await User.findByPk(id)
+
+            if(!data){
+                throw {name: "NotFound"}
+            }
+
+            if(data.point >= 1000){
+                await User.update({badge: "Expert"})
+            } else if (data.point >= 500){
+                await User.update({badge: "Intermediate"})
+            }
+
             const user = await User.findByPk(id, {include: [{
                 model: MyPlant,
                 include: [Plant]
             }, 'Threads', {model: MyReward, include: [Reward]}], where: {UserId: id}, attributes : { exclude: ['password']}})
-
-            if(!user){
-                throw {name: "NotFound"}
-            }
 
             res.status(200).json(user)
         } catch (error) {
@@ -90,7 +98,6 @@ class UserController {
             if(!req.file){
                 throw {name: "EmptyImage"}
             }
-            
             const {id} = req.user
             const {location} = req.file
             await MyPlant.create({PlantId, UserId: id, imgUrl: location})
@@ -116,33 +123,32 @@ class UserController {
             next(error)
         }
     }
-        
-static async checkDisease(req, res, next) {
-    try {
-        const { id: UserId } = req.user
-        const { id } = req.params
-        uploadSingle(req, res, (error) => {
-            if(error) return res.status(400).json({ message: `Only images are allowed!` })
-            predict(req.file.path)
-            .then((prediction) => {
-                const { confidence, disease } = prediction
-                MyPlant.update({ confidence, disease }, { where: { UserId, id } })
-                .then(() => {
-                    console.log(prediction)
-                    res.json(prediction)
+
+    static async checkDisease(req, res, next) {
+        try {
+            const { id: UserId } = req.user
+            const { id } = req.params
+            uploadSingle(req, res, (error) => {
+                if(error) return res.status(400).json({ message: `Only images are allowed!` })
+                predict(req.file.path)
+                .then((prediction) => {
+                    const { confidence, disease } = prediction
+                    MyPlant.update({ confidence, disease }, { where: { UserId, id } })
+                    .then(() => {
+                        res.json(prediction)
+                    })
+                    .catch((error) => {
+                        throw error
+                    })
                 })
                 .catch((error) => {
                     throw error
                 })
             })
-            .catch((error) => {
-                throw error
-            })
-        })
-    } catch (error) {
-        next(error)  
+        } catch (error) {
+            next(error)  
+        }
     }
-}
 
     static async getReward(req, res, next){
         try {
