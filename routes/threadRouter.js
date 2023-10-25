@@ -14,7 +14,7 @@ threadRouter.post(`/reaction/:ThreadId`, ThreadController.reactAThread)
 // threadRouter.delete(`/reaction/:ThreadId`, ThreadController.unreactAThread)
 
 threadRouter.get(`/comments/:ThreadId`, ThreadController.getThreadComment)
-threadRouter.post(`/comments/:ThreaId`, ThreadController.comment)
+threadRouter.post(`/comments/:ThreadId`, ThreadController.comment)
 
 threadRouter.get(`/`, ThreadController.getThreads)
 threadRouter.post(`/`, upload.single(`image`), ThreadController.postThread)

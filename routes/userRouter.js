@@ -20,9 +20,10 @@ userRouter.post('/my-plant', upload.single('image'), UserController.addMyPlant)
 userRouter.get('/my-plant/:id', UserController.getSingleMyPlant)
 userRouter.delete('/my-plant/:id', UserController.removePlant)
 
-userRouter.post(`/predict`, UserController.checkDisease)
+userRouter.post(`/predict/:id`, UserController.checkDisease)
 
 userRouter.get('/reward', UserController.getReward)
+userRouter.get('/reward/:id', UserController.rewardById)
 userRouter.patch('/claim-reward/:rewardId', UserController.claimReward)
 
 

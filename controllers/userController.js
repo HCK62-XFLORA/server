@@ -176,7 +176,7 @@ class UserController {
                 const {id} = req.params
                 const {id: UserId} = req.user
     
-                const myPlant = await MyPlant.findByPk(id, {where: {UserId: UserId}})
+                const myPlant = await MyPlant.findByPk(id, {include: Plant}, {where: {UserId: UserId}})
     
                 if(!myPlant){
                     throw {name: "NotFound"}
@@ -209,7 +209,7 @@ class UserController {
     static async checkDisease(req, res, next) {
         try {
             const { id: UserId } = req.user
-            const { id } = req.body
+            const { id } = req.params
             uploadSingle(req, res, (error) => {
                 if(error) return res.status(400).json({ message: `Only images are allowed!` })
                 predict(req.file.path)
@@ -238,22 +238,23 @@ class UserController {
 
             const threads = await Thread.findAll({ include: [`Comments`, `Reactions`], where: { UserId: 2 } })
             // console.log(threads)
-            const likes = threads.map((thread) => {
-                if(thread.Reactions.reaction) {
-                    return thread.Reaction
-                }
-            })
-            const dislikes = threads.map((thread) => {
-                if(!thread.Reactions.reaction) {
-                    return thread.Reaction
+            let likes = []
+            let dislikes = []
+
+            threads.forEach((thread) => {
+                if(thread.Reactions.length !=0){
+                    thread.Reactions.forEach((reaction) => {
+                        if(reaction.reaction == true){
+                            likes.push(reaction)
+                        } else {
+                            dislikes.push(reaction)
+                        }
+                    })
                 }
             })
 
             const threadCount = threads.length
-            // const comments = threads.map((thread) => {
-            //     return threads.Comments
-            // })
-            res.json({ likes, dislikes, comments })
+            res.json({ likes, dislikes })
         } catch (error) {
             next(error)
         }
@@ -262,6 +263,16 @@ class UserController {
     static async getReward(req, res, next){
         try {
             const reward = await Reward.findAll()
+            res.status(200).json(reward)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    static async rewardById(req, res, next){
+        try {
+            const {id} = req.params
+            const reward = await Reward.findByPk(id)
             res.status(200).json(reward)
         } catch (error) {
             next(error)
