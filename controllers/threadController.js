@@ -35,7 +35,7 @@ class ThreadController {
                 dislikes: dislikes.length
             }
             
-            res.json(thread)
+            res.json({thread, likes: likes.length, disklikes: dislikes.length})
         } catch (error) {
             next(error)
         }
