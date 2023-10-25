@@ -60,24 +60,6 @@ class UserController {
         }
     }
 
-    // static async updateProfile(req, res, next){
-    //     try {
-    //         const {email, password, username, birthday, gender} = req.body
-    //         const {id} = req.params
-    //         const user = await User.findByPk(id)
-
-    //         if(!user){
-    //             throw {name: "NotFound"}
-    //         }
-
-    //         await User.update({email, password, username, birthday, gender}, {where: {id: id}})
-
-    //         res.status(200).json({message: "Update user profile success"})
-    //     } catch (error) {
-    //         next(error)
-    //     }
-    // }
-
     static async getMyPlant(req, res, next){
         try {
             const {id} = req.user
@@ -109,7 +91,6 @@ class UserController {
                 throw {name: "EmptyImage"}
             }
             
-            console.log(PlantId,`=============================`)
             const {id} = req.user
             const {location} = req.file
             await MyPlant.create({PlantId, UserId: id, imgUrl: location})
@@ -136,24 +117,6 @@ class UserController {
         }
     }
         
-    static async removePlant(req, res, next){
-    try {
-        const {id} = req.params
-
-        const myPlant = await MyPlant.findByPk(id)
-
-        if(!myPlant){
-            throw {name: "NotFound"}
-        }
-
-        await MyPlant.destroy({where: {id: id}})
-
-        res.status(200).json({message: "Your plant deleted successfully"})
-    } catch (error) {
-        next(error)
-    }
-}
-
 static async checkDisease(req, res, next) {
     try {
         const { id: UserId } = req.user
@@ -180,33 +143,6 @@ static async checkDisease(req, res, next) {
         next(error)  
     }
 }
-
-    static async getPoints(req, res, next) {
-        try {
-            // const { id } = req.user
-
-            const threads = await Thread.findAll({ include: [`Comments`, `Reactions`], where: { UserId: 2 } })
-            // console.log(threads)
-            let likes = []
-            let dislikes = []
-
-            threads.forEach((thread) => {
-                if(thread.Reactions.length !=0){
-                    thread.Reactions.forEach((reaction) => {
-                        if(reaction.reaction == true){
-                            likes.push(reaction)
-                        } else {
-                            dislikes.push(reaction)
-                        }
-                    })
-                }
-            })
-
-            res.json({ likes, dislikes })
-        } catch (error) {
-            next(error)
-        }
-    }
 
     static async getReward(req, res, next){
         try {
