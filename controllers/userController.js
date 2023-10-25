@@ -217,6 +217,7 @@ class UserController {
                     const { confidence, disease } = prediction
                     MyPlant.update({ confidence, disease }, { where: { UserId, id } })
                     .then(() => {
+                        console.log(prediction)
                         res.json(prediction)
                     })
                     .catch((error) => {
@@ -253,7 +254,6 @@ class UserController {
                 }
             })
 
-            const threadCount = threads.length
             res.json({ likes, dislikes })
         } catch (error) {
             next(error)
