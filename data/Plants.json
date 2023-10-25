@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Rose",
+    "family": "Rosaceae",
+    "imgUrl": "rose.jpg",
+    "description": "Beautiful flowering plant with thorns."
+  },
+  {
+    "name": "Lily",
+    "family": "Liliaceae",
+    "imgUrl": "lily.jpg",
+    "description": "Fragrant flower with trumpet-shaped petals."
+  }
+]

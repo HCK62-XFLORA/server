@@ -26,7 +26,6 @@ const upload = multer({
         contentType: multers3.AUTO_CONTENT_TYPE
     }), 
     fileFilter: (req, file, callback) => {
-
         const fileExts = [`.png`, `.jpg`, `.jpeg`];
 
         const isAllowedExt = fileExts.includes(

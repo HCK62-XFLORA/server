@@ -1,21 +1,30 @@
-if(process.env.NODE_ENV !== `production`) require(`dotenv`).config()
+if (process.env.NODE_ENV !== `production`) require(`dotenv`).config();
 
-const express = require(`express`)
-const app = express()
+const express = require("express");
+const app = express();
 const PORT = process.env.PORT || 3000
 
-const cors = require(`cors`)
-const router = require(`./routes/index`)
+const http = require("http");
+const server = http.createServer(app);
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cors())
-app.use(`/`, router)
+const configureSocket = require("./config_socket/socket");
+const io = configureSocket(server)
+
+const cors = require(`cors`);
+const router = require(`./routes/index`);
 
 
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(`/`, router);
 
+// server.listen(PORT, () => console.log(`App is listening on port ${PORT}`));
 // app.listen(PORT, () => console.log(`App is listening on port ${PORT}`))
+
 module.exports = {
-    PORT,
-    app
-}
+    app,
+    server,
+    io, 
+    PORT
+};

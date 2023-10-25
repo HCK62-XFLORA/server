@@ -1,0 +1,14 @@
+[
+  {
+    "UserId": 1,
+    "ThreadId": 1,
+    "comment": "Have you tried pruning your roses? It might help with blooming.",
+    "isUseFul": true
+  },
+  {
+    "UserId": 2,
+    "ThreadId": 2,
+    "comment": "Wow, that lily is stunning! What's the secret to its vibrant color?",
+    "isUseFul": true
+  }
+]

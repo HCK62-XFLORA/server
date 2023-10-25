@@ -22,10 +22,6 @@ function errorHandler(error, req, res, next){
             status = 400
             message = error.errors[0].message
         break;
-        case "Unauthorized" :
-            status = 401
-            message = "User not found"
-        break;
         case "JsonWebTokenError" :
             status = 401
             message = "Invalid token"
@@ -59,7 +55,6 @@ function errorHandler(error, req, res, next){
         break
     }
 
-    console.log(status, message, `<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`)
     res.status(status).json({message})
 }
 

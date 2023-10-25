@@ -33,7 +33,6 @@ class UserController {
     static async register(req, res, next){
         try {
             const {email, password, username, birthday, gender} = req.body
-            console.log(req.body);
 
             const user = await User.create({email, password, username, birthday, gender})
 
@@ -42,38 +41,6 @@ class UserController {
             next(error)
         }
     }
-
-    // static async forgetPassword(req, res, next){
-    //     try {
-    //         const {email} = req.body
-
-    //         if(!email){
-    //             throw {name: "EmptyEmail"}
-    //         }
-
-    //         const user = await User.findOne({where: {email: email}})
-
-    //         if(!user){
-    //             throw "NotFound"
-    //         }
-
-    //         const token = generateToken({id: user.id})
-
-
-    //     } catch (error) {
-            
-    //     }
-    // }
-
-    // static async resetPassword(req, res, next){
-    //     try {
-    //         const {password} = req.body
-    //         await User.update({password: password}, {where: {}})
-    //         res.status(200).json({message: "Reset password success"})
-    //     } catch (error) {
-    //         next(error)
-    //     }
-    // }
 
     static async getUser(req, res, next){
         try {
@@ -151,87 +118,68 @@ class UserController {
             next(error)
         }
     }
-    
-    // static async updateMyPlant(req, res, next){
-        //     try {
-            //         const {PlantId, imgUrl} = req.body
-            //         const {id} = req.user
-            //         const {id: MyPlantId} = req.params
-            
-            //         const myPlant = await MyPlant.findByPk(MyPlantId)
-            
-            //         if(!myPlant){
-                //             throw {name: "NotFound"}
-                //         }
-                
-                //         await MyPlant.update({PlantId, UserId: id, imgUrl}, {where: {id: MyPlantId}})
-                //         res.status(200).json({message: "Your plant updated successfully"})
-                //     } catch (error) {
-                    //         next(error)
-                    //     }
-                    // }
                     
-        static async getSingleMyPlant(req, res, next){
-            try {
-                const {id} = req.params
-                const {id: UserId} = req.user
-    
-                const myPlant = await MyPlant.findByPk(id, {include: Plant}, {where: {UserId: UserId}})
-    
-                if(!myPlant){
-                    throw {name: "NotFound"}
-                }
-    
-                res.status(200).json(myPlant)
-            } catch (error) {
-                next(error)
-            }
-        }
-        
-        static async removePlant(req, res, next){
+    static async getSingleMyPlant(req, res, next){
         try {
             const {id} = req.params
+            const {id: UserId} = req.user
 
-            const myPlant = await MyPlant.findByPk(id)
+            const myPlant = await MyPlant.findByPk(id, {include: Plant}, {where: {UserId: UserId}})
 
             if(!myPlant){
                 throw {name: "NotFound"}
             }
 
-            await MyPlant.destroy({where: {id: id}})
-
-            res.status(200).json({message: "Your plant deleted successfully"})
+            res.status(200).json(myPlant)
         } catch (error) {
             next(error)
         }
     }
+        
+    static async removePlant(req, res, next){
+    try {
+        const {id} = req.params
 
-    static async checkDisease(req, res, next) {
-        try {
-            const { id: UserId } = req.user
-            const { id } = req.params
-            uploadSingle(req, res, (error) => {
-                if(error) return res.status(400).json({ message: `Only images are allowed!` })
-                predict(req.file.path)
-                .then((prediction) => {
-                    const { confidence, disease } = prediction
-                    MyPlant.update({ confidence, disease }, { where: { UserId, id } })
-                    .then(() => {
-                        console.log(prediction)
-                        res.json(prediction)
-                    })
-                    .catch((error) => {
-                        throw error
-                    })
+        const myPlant = await MyPlant.findByPk(id)
+
+        if(!myPlant){
+            throw {name: "NotFound"}
+        }
+
+        await MyPlant.destroy({where: {id: id}})
+
+        res.status(200).json({message: "Your plant deleted successfully"})
+    } catch (error) {
+        next(error)
+    }
+}
+
+static async checkDisease(req, res, next) {
+    try {
+        const { id: UserId } = req.user
+        const { id } = req.params
+        uploadSingle(req, res, (error) => {
+            if(error) return res.status(400).json({ message: `Only images are allowed!` })
+            predict(req.file.path)
+            .then((prediction) => {
+                const { confidence, disease } = prediction
+                MyPlant.update({ confidence, disease }, { where: { UserId, id } })
+                .then(() => {
+                    console.log(prediction)
+                    res.json(prediction)
                 })
                 .catch((error) => {
                     throw error
                 })
             })
-        } catch (error) {
-          next(error)  
-        }
+            .catch((error) => {
+                throw error
+            })
+        })
+    } catch (error) {
+        next(error)  
     }
+}
 
     static async getPoints(req, res, next) {
         try {
@@ -298,10 +246,11 @@ class UserController {
 
             const user = await User.findByPk(id)
             const reward = await Reward.findByPk(rewardId)
-            console.log(user, reward)
+            if(!reward) throw { name: `NotFound` }
+
             if(user.point >= reward.point){
                 let point = user.point - reward.point
-                await User.update({point}, {where: {id: id}})
+                await User.update({ point }, {where: { id: id }})
                 await MyReward.create({UserId: id, RewardId: rewardId})
             } else {
                 throw {name: "Insufficient"}

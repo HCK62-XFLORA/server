@@ -8,7 +8,7 @@ async function authentication(req, res, next){
         const user = await User.findByPk(payload.id)
 
         if(!user){
-            throw {name: "Unauthorized"}
+            return res.status(401).json({ message: `User not found` })
         }
 
         req.user = {id: user.id, username: user.username}
