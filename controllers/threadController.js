@@ -1,14 +1,20 @@
-const { Thread, Comment, Reaction, Forum } = require(`../models`)
+const { Thread, User, Comment, Reaction, Forum } = require(`../models`)
 
 const { uploadSingle, predict } = require("../helpers/tensorflow")
+
+const OpenAI = require("openai");
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_KEY, // defaults to process.env["OPENAI_API_KEY"]
+});
 
 class ThreadController {
 
     static async getThread(req, res, next) {
         try {
-            const { ThreadId } = req.query
+            const { ThreadId } = req.params
 
-            const thread = await Thread.findByPk(ThreadId)
+            const thread = await Thread.findByPk(ThreadId, { include: [{ model: Comment, include: [{ model: User, attributes: [`username`] }]}, { model: Reaction }] })
             if(!thread) return res.status(404).json({ message: `Thread not found!` })
 
             res.json(thread)
@@ -101,7 +107,7 @@ class ThreadController {
             const { reaction } = req.body
 
             const checkUserReaction = await Reaction.findAll({ where: { UserId: id, ThreadId } })
-            if(checkUserReaction) return res.status(404).json({ message: `You're already reacted to this thread!` })
+            if(checkUserReaction.length !== 0) return res.status(404).json({ message: `You're already reacted to this thread!` })
 
             const newReaction = await Reaction.create({ UserId: id, ThreadId, reaction})
             res.status(201).json(newReaction)
@@ -137,7 +143,8 @@ class ThreadController {
     static async comment(req, res, next) {
         try {
             const { id } = req.user
-            const { ThreadId, comment } = req.body
+            const { comment } = req.body
+            const { ThreadId } = req.params
 
             const newComment = await Comment.create({ UserId: id, ThreadId, comment })
             res.status(201).json(newComment)
@@ -145,6 +152,39 @@ class ThreadController {
             next(error)
         }
     }
+
+    static async askProblem(req, res, next) {
+        try {
+          const { questionType, message } = req.body; // Ambil tipe pertanyaan dan pesan dari req.body
+          console.log(req.body);
+          let content;
+          if (questionType === "rekomendasi") {
+            content = `Rekomendasi tanaman: ${message}`;
+          } else if (questionType === "informasi") {
+            content = `Informasi mengenai tanaman: ${message}`;
+          } else if (questionType === "masalah") {
+            content = `Masalah yang terkait dengan tanaman: ${message}`;
+          } else {
+            return res.status(400).json({ error: "Tipe pertanyaan tidak valid" });
+          }
+    
+          const completion = await openai.chat.completions.create({
+            messages: [
+              {
+                role: "user",
+                content: `${content}`,
+              },
+            ],
+            model: "gpt-3.5-turbo",
+          });
+    
+          console.log("Sampe sini", completion);
+          res.status(200).json(completion.choices);
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: "Internal Server Error" });
+        }
+      }
 }
 
 module.exports = ThreadController

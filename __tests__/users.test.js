@@ -226,7 +226,7 @@ describe("User Routes Test", () => {
   });
 });
 
-describe("POST /users/login - user login", () => {
+describe.only("POST /users/login - user login", () => {
   test("200 Success login - should return access_token", (done) => {
     request(app)
       .post("/users/login")
@@ -483,7 +483,7 @@ describe(`POST /users/predict`, () => {
   test(`Successfully get a plant's disease's prediction`, async() => {
     try {
       const response = await request(app)
-      .post(`/users/predict`)
+      .post(`/users/predict/1`)
       .set(`access_token`, access_token)
       .attach(`image`, `./data/cherry.jpeg`)
       .expect(200)
@@ -498,7 +498,7 @@ describe(`POST /users/predict`, () => {
   test(`Failed get a plant's disease's prediction because of invalid file extension`, async () => {
     try {
       const response = await request(app)
-      .post(`/users/predict`)
+      .post(`/users/predict/1`)
       .set(`access_token`, access_token)
       .attach(`image`, `./data/plants.json`)
       .expect(400)

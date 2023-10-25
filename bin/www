@@ -22,38 +22,4 @@ const { app, PORT } = require(`../app`)
 //     server
 // }
 
-
-// describe(`POST /users/predict`, () => {
-  
-//     test(`Successfully get a plant's disease's prediction`, async() => {
-//       try {
-//         const response = await request(app)
-//         .post(`/users/predict`)
-//         .set(`access_token`, access_token)
-//         .attach(`image`, `./data/cherry.jpeg`)
-//         .expect(200)
-//           console.log(response.body)
-//           expect(response.body).toBeInstanceOf(Object)
-//           expect(response.body).toHaveProperty(`confidence`)
-//       } catch (error) {
-//         console.log(error)
-//       }
-//     })
-  
-//     test(`Failed get a plant's disease's prediction`, async () => {
-//       try {
-//         const response = await request(app)
-//         .post(`/users/predict`)
-//         .set(`access_token`, access_token)
-//         .attach(`image`, `./data/plants.json`)
-//         .expect(200)
-//           console.log(response.body)
-//           expect(response.body).toBeInstanceOf(Object)
-//           expect(response.body).toHaveProperty(`confidence`)
-//       } catch (error) {
-//         console.log(error)
-//       }
-//     })
-//   })
-
 app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`))

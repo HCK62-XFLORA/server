@@ -207,7 +207,7 @@ class UserController {
     static async checkDisease(req, res, next) {
         try {
             const { id: UserId } = req.user
-            const { id } = req.body
+            const { id } = req.params
             uploadSingle(req, res, (error) => {
                 if(error) return res.status(400).json({ message: `Only images are allowed!` })
                 predict(req.file.path)
@@ -215,6 +215,7 @@ class UserController {
                     const { confidence, disease } = prediction
                     MyPlant.update({ confidence, disease }, { where: { UserId, id } })
                     .then(() => {
+                        console.log(prediction)
                         res.json(prediction)
                     })
                     .catch((error) => {
@@ -235,18 +236,22 @@ class UserController {
             // const { id } = req.user
 
             const threads = await Thread.findAll({ include: [`Comments`, `Reactions`], where: { UserId: 2 } })
-            // console.log(threads)
-            const likes = threads.map((thread) => {
-                if(thread.Reactions.reaction) {
-                    return thread.Reaction
-                }
-            })
-            const dislikes = threads.map((thread) => {
-                if(!thread.Reactions.reaction) {
-                    return thread.Reaction
-                }
-            })
 
+            let likes = []
+            let dislikes = []
+
+            threads.forEach((thread) => {
+                if(threads.Reactions.length != 0) {
+
+                    thread.Reactions.forEach((reaction) => {
+                        if(reaction.reaction == true) {
+                            likes.push(reaction)
+                        } else {
+                            dislikes.push(reaction)
+                        }
+                    })
+                }
+            })
             const threadCount = threads.length
             // const comments = threads.map((thread) => {
             //     return threads.Comments
