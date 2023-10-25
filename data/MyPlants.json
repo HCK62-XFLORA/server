@@ -1,0 +1,12 @@
+[
+  {
+    "PlantId": 1,
+    "UserId": 1,
+    "imgUrl": "plant1.jpg"
+  },
+  {
+    "PlantId": 2,
+    "UserId": 2,
+    "imgUrl": "plant2.jpg"
+  }
+]

@@ -10,8 +10,9 @@ router.get('/', (req, res) => {
 })
 router.use(`/threads`, threadRouter)
 router.use('/users', userRouter)
-
-router.use(errorHandler)
+// -----------------------------------------------------------------------------------------
+const forumRouter = require("./forumRouter")
+router.use(`/forums`, forumRouter)
 
 
 

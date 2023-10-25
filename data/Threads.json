@@ -1,0 +1,14 @@
+[
+  {
+    "UserId": 1,
+    "imgUrl": "thread1.jpg",
+    "content": "I need help with my roses. They are not blooming properly.",
+    "ForumId": 1
+  },
+  {
+    "UserId": 2,
+    "imgUrl": "thread3.jpg",
+    "content": "Look at this beautiful lily I found in my garden!",
+    "ForumId": 2
+  }
+]
