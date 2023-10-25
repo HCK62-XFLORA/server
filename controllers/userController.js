@@ -52,9 +52,9 @@ class UserController {
             }
 
             if(data.point >= 1000){
-                await User.update({badge: "Expert"})
+                await User.update({badge: "Expert"}, {where: {id}})
             } else if (data.point >= 500){
-                await User.update({badge: "Intermediate"})
+                await User.update({badge: "Intermediate"}, {where: {id}})
             }
 
             const user = await User.findByPk(id, {include: [{
